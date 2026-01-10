@@ -275,7 +275,6 @@ const ItemManagement: React.FC<ItemManagementProps> = ({ itemType }) => {
                   newItemState={newItem}
                   setNewItemState={setNewItem}
                   recipeIngredients={recipeInputs}
-                  onCancel={handleCancelEdit}
                 />
                 {itemType === 'COMPUESTO' && (
                   <div className="mt-4">
