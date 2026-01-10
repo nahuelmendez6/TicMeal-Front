@@ -179,6 +179,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             <i className="bi bi-bar-chart me-2"></i>
             Reportes
           </Link>
+        </li>,
+        <li key="compras" className={isActive('/purchases-and-suppliers') ? 'active' : ''}>
+          <Link to="/purchases-and-suppliers" className="d-flex align-items-center p-3 text-white">
+            <i className="bi bi-cart3 me-2"></i>
+            Compras
+          </Link>
         </li>
       );
     }

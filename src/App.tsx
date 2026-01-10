@@ -20,6 +20,9 @@ import TicketMonitor from './components/TicketMonitor';
 import KitchenTicketForm from './components/KitchenTicketForm';
 import QRGeneratorPage from './pages/QRGeneratorPage';
 import MealShiftsPage from './pages/MealShiftsPage';
+import PurchasesAndSuppliersPage from './pages/PurchasesAndSuppliersPage';
+import CreatePurchaseOrderPage from './pages/CreatePurchaseOrderPage';
+import PurchaseOrderDetailsPage from './pages/PurchaseOrderDetailsPage';
 import './App.css';
 
 function App() {
@@ -110,6 +113,27 @@ function App() {
             <ProtectedRoute>
               <Layout>
                 <UserManagement />
+              </Layout>
+            </ProtectedRoute>
+          } />
+          <Route path="/purchases-and-suppliers" element={
+            <ProtectedRoute>
+              <Layout>
+                <PurchasesAndSuppliersPage />
+              </Layout>
+            </ProtectedRoute>
+          } />
+          <Route path="/purchases/new" element={
+            <ProtectedRoute>
+              <Layout>
+                <CreatePurchaseOrderPage />
+              </Layout>
+            </ProtectedRoute>
+          } />
+          <Route path="/purchases/:id" element={
+            <ProtectedRoute>
+              <Layout>
+                <PurchaseOrderDetailsPage />
               </Layout>
             </ProtectedRoute>
           } />

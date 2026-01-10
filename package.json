@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
+    "@tanstack/react-query": "^5.90.16",
     "@types/recharts": "^1.8.29",
     "axios": "^1.13.2",
     "bootstrap": "^5.3.8",
@@ -24,9 +26,11 @@
     "react-dnd-html5-backend": "^16.0.1",
     "react-dnd-touch-backend": "^16.0.1",
     "react-dom": "^19.1.1",
+    "react-hook-form": "^7.70.0",
     "react-router-dom": "^7.9.5",
     "recharts": "^3.5.1",
-    "socket.io-client": "^4.8.1"
+    "socket.io-client": "^4.8.1",
+    "zod": "^4.3.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",
