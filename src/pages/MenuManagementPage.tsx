@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import ItemManagement from './ItemManagement';
 import ItemIngredientManager from './ItemIngredientManager';
 import MealShiftManager from '../components/MealShiftManager';
-import ShiftMenuAssignment from './ShiftMenuAssignment';
 
 const MenuManagementPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState('simple');
@@ -20,8 +19,6 @@ const MenuManagementPage: React.FC = () => {
             <ItemManagement itemType="COMPUESTO" />
           </div>
         );
-      case 'shifts':
-        return <ShiftMenuAssignment />;
       case 'ingredients':
         return <ItemIngredientManager />;
       default:
@@ -42,11 +39,6 @@ const MenuManagementPage: React.FC = () => {
         <li className="nav-item">
           <button className={`nav-link ${activeTab === 'production' ? 'active' : ''}`} onClick={() => setActiveTab('production')}>
             Producción
-          </button>
-        </li>
-        <li className="nav-item">
-          <button className={`nav-link ${activeTab === 'shifts' ? 'active' : ''}`} onClick={() => setActiveTab('shifts')}>
-            Turnos
           </button>
         </li>
         <li className="nav-item">
