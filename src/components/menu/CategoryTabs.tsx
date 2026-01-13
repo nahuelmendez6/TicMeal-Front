@@ -27,7 +27,7 @@ const CategoryTabs: React.FC<Props> = ({
   );
 
   return (
-    <ul className="nav nav-tabs mb-3">
+    <ul className="nav nav-underline mb-3">
       {displayedCategories.map(cat => (
         <li className="nav-item" key={cat.id}>
           <button

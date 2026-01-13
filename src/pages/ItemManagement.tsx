@@ -254,6 +254,7 @@ const ItemManagement: React.FC<ItemManagementProps> = ({ itemType }) => {
             selectedCategory={selectedCategory}
             onEdit={handleEditClick as any}
             onDelete={handleDeleteClick}
+            itemType={itemType} // Pass itemType here
           />
         </div>
       </div>

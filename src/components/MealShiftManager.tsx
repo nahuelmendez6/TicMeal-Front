@@ -1,11 +1,13 @@
 // src/components/MealShiftManager.tsx
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useMealShifts } from '../hooks/useMealShifts';
 import { type CreateMealShiftDto } from '../services/mealShiftService';
 import { fetchShifts } from '../services/shift.services';
 import { menuItemsService } from '../services/menu.items.service';
 import api from '../services/api';
+import { Plus, ChevronLeft, ChevronRight, Pencil, Trash2 } from 'lucide-react'; // Import Lucide icons
+import MealShiftFormModal from './MealShiftFormModal'; // Import the new modal component
 
 const getLocalDate = () => {
   const today = new Date();
@@ -14,7 +16,7 @@ const getLocalDate = () => {
   return localDate.toISOString().split('T')[0];
 };
 
-const MealShiftManager: React.FC = () => {
+const MealShiftManager: React.FC = () => { // No props here
   const { mealShifts, loading, error, addMealShift, refetch } = useMealShifts();
   const [shifts, setShifts] = useState<any[]>([]);
   const [menuItems, setMenuItems] = useState<any[]>([]);
@@ -37,6 +39,9 @@ const MealShiftManager: React.FC = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [showEditConfirmModal, setShowEditConfirmModal] = useState(false);
+  const [showFormModal, setShowFormModal] = useState(false); // New state for form modal
+
+  const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
   // Cargar datos para los selectores
   useEffect(() => {
@@ -93,6 +98,7 @@ const MealShiftManager: React.FC = () => {
       }
       setFormData(initialState);
       setShowEditConfirmModal(false);
+      setShowFormModal(false); // Close form modal on success
       // Limpiar mensaje de éxito después de 3 segundos
       setTimeout(() => setSuccessMessage(null), 3000);
     } catch (err: any) {
@@ -110,6 +116,7 @@ const MealShiftManager: React.FC = () => {
       menuItemId: mealShift.menuItemId,
       quantityProduced: mealShift.quantityProduced,
     });
+    setShowFormModal(true); // Open form modal for editing
   };
 
   const handleDeleteClick = (id: number) => {
@@ -135,6 +142,7 @@ const MealShiftManager: React.FC = () => {
   const handleCancelEdit = () => {
     setEditingId(null);
     setFormData(initialState);
+    setShowFormModal(false); // Close form modal on cancel
   };
 
   const changeDate = (days: number) => {
@@ -143,111 +151,37 @@ const MealShiftManager: React.FC = () => {
     setFilterDate(date.toISOString().split('T')[0]);
   };
 
+  const openCreateModal = () => {
+    setEditingId(null);
+    setFormData(initialState);
+    setFormError(null);
+    setSuccessMessage(null);
+    setShowFormModal(true);
+  };
+
   return (
     <div className="container-fluid">
-      <h2 className="mb-4">Gestión de Producción Diaria</h2>
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h2 className="mb-0">Gestión de Producción Diaria</h2>
+        <button className="btn btn-primary d-flex align-items-center" onClick={openCreateModal}>
+          <Plus size={20} className="me-2" />
+          Nueva Producción
+        </button>
+      </div>
 
       {/* Mensajes de Error Globales */}
       {error && <div className="alert alert-danger">{error}</div>}
-      {formError && <div className="alert alert-warning">{formError}</div>}
-      {successMessage && <div className="alert alert-success">{successMessage}</div>}
+      {/* formError y successMessage ahora se manejan dentro del modal */}
 
       <div className="row">
-        {/* Formulario de Creación */}
-        <div className="col-md-4 mb-4">
-          <div className="card shadow-sm">
-            <div className="card-header bg-primary text-white">
-              <h5 className="mb-0 h6">{editingId ? 'Editar Producción' : 'Nueva Producción'}</h5>
-            </div>
-            <div className="card-body">
-              <form onSubmit={handleSubmit}>
-                <div className="mb-3">
-                  <label htmlFor="date" className="form-label">Fecha</label>
-                  <input
-                    type="date"
-                    className="form-control"
-                    id="date"
-                    name="date"
-                    value={formData.date}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-
-                <div className="mb-3">
-                  <label htmlFor="shiftId" className="form-label">Turno</label>
-                  <select
-                    className="form-select"
-                    id="shiftId"
-                    name="shiftId"
-                    value={formData.shiftId}
-                    onChange={handleInputChange}
-                    required
-                  >
-                    <option value={0}>Seleccione un turno</option>
-                    {shifts.map((shift) => (
-                      <option key={shift.id} value={shift.id}>
-                        {shift.name} ({shift.startTime?.substring(0, 5)} - {shift.endTime?.substring(0, 5)})
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="mb-3">
-                  <label htmlFor="menuItemId" className="form-label">Plato / Ítem</label>
-                  <select
-                    className="form-select"
-                    id="menuItemId"
-                    name="menuItemId"
-                    value={formData.menuItemId}
-                    onChange={handleInputChange}
-                    required
-                  >
-                    <option value={0}>Seleccione un ítem</option>
-                    {menuItems.map((item) => (
-                      <option key={item.id} value={item.id}>
-                        {item.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="mb-3">
-                  <label htmlFor="quantityProduced" className="form-label">Cantidad Producida</label>
-                  <input
-                    type="number"
-                    className="form-control"
-                    id="quantityProduced"
-                    name="quantityProduced"
-                    value={formData.quantityProduced || ''}
-                    onChange={handleInputChange}
-                    min="1"
-                    required
-                  />
-                </div>
-
-                <button type="submit" className={`btn w-100 ${editingId ? 'btn-warning' : 'btn-success'}`} disabled={loading}>
-                  {loading ? 'Guardando...' : (editingId ? 'Actualizar' : 'Registrar Producción')}
-                </button>
-
-                {editingId && (
-                  <button type="button" className="btn btn-secondary w-100 mt-2" onClick={handleCancelEdit}>
-                    Cancelar
-                  </button>
-                )}
-              </form>
-            </div>
-          </div>
-        </div>
-
         {/* Tabla de Listado */}
-        <div className="col-md-8">
+        <div className="col-12"> {/* Changed to col-12 to take full width */}
           <div className="card shadow-sm">
             <div className="card-header bg-white d-flex justify-content-between align-items-center">
               <h5 className="mb-0 h6">Historial de Producción</h5>
               <div className="d-flex align-items-center">
                 <button type="button" className="btn btn-sm btn-outline-secondary" onClick={() => changeDate(-1)} title="Día anterior">
-                  <i className="bi bi-chevron-left"></i>
+                  <ChevronLeft size={16} />
                 </button>
                 <input
                   type="date"
@@ -257,7 +191,7 @@ const MealShiftManager: React.FC = () => {
                   onChange={(e) => setFilterDate(e.target.value)}
                 />
                 <button type="button" className="btn btn-sm btn-outline-secondary" onClick={() => changeDate(1)} title="Día siguiente">
-                  <i className="bi bi-chevron-right"></i>
+                  <ChevronRight size={16} />
                 </button>
               </div>
             </div>
@@ -312,10 +246,10 @@ const MealShiftManager: React.FC = () => {
                             </td>
                             <td className="text-end">
                               <button className="btn btn-sm btn-outline-primary me-2" onClick={() => handleEdit(ms)} title="Editar">
-                                <i className="bi bi-pencil"></i>
+                                <Pencil size={16} />
                               </button>
                               <button className="btn btn-sm btn-outline-danger" onClick={() => handleDeleteClick(ms.id)} title="Eliminar">
-                                <i className="bi bi-trash"></i>
+                                <Trash2 size={16} />
                               </button>
                             </td>
                           </tr>
@@ -351,26 +285,24 @@ const MealShiftManager: React.FC = () => {
         </div>
       )}
 
-      {/* Modal de Confirmación de Edición */}
-      {showEditConfirmModal && (
-        <div className="modal fade show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }} tabIndex={-1}>
-          <div className="modal-dialog modal-dialog-centered">
-            <div className="modal-content">
-              <div className="modal-header bg-warning text-dark">
-                <h5 className="modal-title">Confirmar Edición</h5>
-                <button type="button" className="btn-close" onClick={() => setShowEditConfirmModal(false)}></button>
-              </div>
-              <div className="modal-body">
-                <p>¿Está seguro de que desea guardar los cambios en esta producción?</p>
-              </div>
-              <div className="modal-footer">
-                <button type="button" className="btn btn-secondary" onClick={() => setShowEditConfirmModal(false)}>Cancelar</button>
-                <button type="button" className="btn btn-primary" onClick={executeSubmit}>Guardar Cambios</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Form Modal */}
+      <MealShiftFormModal
+        show={showFormModal}
+        onClose={() => setShowFormModal(false)}
+        formData={formData}
+        handleInputChange={handleInputChange}
+        handleSubmit={handleSubmit}
+        loading={loading}
+        editingId={editingId}
+        handleCancelEdit={handleCancelEdit}
+        formError={formError}
+        successMessage={successMessage}
+        shifts={shifts}
+        menuItems={menuItems}
+        showEditConfirmModal={showEditConfirmModal}
+        executeSubmit={executeSubmit}
+        setShowEditConfirmModal={setShowEditConfirmModal}
+      />
     </div>
   );
 };

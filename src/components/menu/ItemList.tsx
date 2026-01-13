@@ -66,20 +66,24 @@ interface Props {
   selectedCategory: string | null;
   onEdit: (item: MenuItem) => void;
   onDelete: (id: number) => void;
+  itemType?: 'SIMPLE' | 'COMPUESTO'; // Add itemType prop
 }
 
-const ItemList: React.FC<Props> = ({ items, onEdit, onDelete }) => {
+const ItemList: React.FC<Props> = ({ items, onEdit, onDelete, itemType }) => {
   return (
     <div className="table-responsive" style={{ maxHeight: '350px', overflowY: 'auto' }}>
       <table className="table table-hover align-middle">
         <thead className="table-light">
           <tr>
             <th style={{ position: 'sticky', top: 0, zIndex: 1 }}>Nombre</th>
-            <th style={{ position: 'sticky', top: 0, zIndex: 1 }}>Ícono</th>
-            <th style={{ position: 'sticky', top: 0, zIndex: 1 }}>Stock</th>
-            <th style={{ position: 'sticky', top: 0, zIndex: 1 }}>Mínimo</th>
-            <th style={{ position: 'sticky', top: 0, zIndex: 1 }}>Max Orden</th>
-            <th style={{ position: 'sticky', top: 0, zIndex: 1 }}>Costo</th>
+            {itemType !== 'COMPUESTO' && (
+              <>
+                <th style={{ position: 'sticky', top: 0, zIndex: 1 }}>Stock</th>
+                <th style={{ position: 'sticky', top: 0, zIndex: 1 }}>Mínimo</th>
+                <th style={{ position: 'sticky', top: 0, zIndex: 1 }}>Max Orden</th>
+                <th style={{ position: 'sticky', top: 0, zIndex: 1 }}>Costo</th>
+              </>
+            )}
             <th style={{ position: 'sticky', top: 0, zIndex: 1 }}></th>
           </tr>
         </thead>
@@ -87,13 +91,20 @@ const ItemList: React.FC<Props> = ({ items, onEdit, onDelete }) => {
         <tbody>
           {items.map(item => (
             <tr key={item.id}>
-              <td>{item.name}</td>
-              <td><IconComponent iconName={item.iconName} /></td>
-              <td>{item.stock || "—"}</td>
-              <td>{item.minStock || "—"}</td>
-              <td>{item.maxOrder || "—"}</td>
-              <td>{item.cost ? `$${item.cost}` : "—"}</td>
-
+              <td>
+                <div className="d-flex align-items-center">
+                  <IconComponent iconName={item.iconName} size={18} />
+                  <span className="ms-2">{item.name}</span>
+                </div>
+              </td>
+              {itemType !== 'COMPUESTO' && (
+                <>
+                  <td>{item.stock || "—"}</td>
+                  <td>{item.minStock || "—"}</td>
+                  <td>{item.maxOrder || "—"}</td>
+                  <td>{item.cost ? `${item.cost}` : "—"}</td>
+                </>
+              )}
               <td>
                 <button
                   className="btn btn-sm btn-outline-primary me-2"

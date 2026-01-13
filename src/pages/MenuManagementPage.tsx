@@ -2,9 +2,23 @@ import React, { useState } from 'react';
 import ItemManagement from './ItemManagement';
 import ItemIngredientManager from './ItemIngredientManager';
 import MealShiftManager from '../components/MealShiftManager';
+import ItemForm from '../components/menu/ItemForm'; // Import ItemForm
+import { Plus } from 'lucide-react'; // Import Plus icon
 
 const MenuManagementPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState('simple');
+  const [showCompositeItemFormModal, setShowCompositeItemFormModal] = useState(false);
+  const [selectedCompositeItem, setSelectedCompositeItem] = useState<any | null>(null); // To handle editing
+
+  const handleOpenCompositeItemForm = () => {
+    setSelectedCompositeItem(null); // For creation
+    setShowCompositeItemFormModal(true);
+  };
+
+  const handleCloseCompositeItemForm = () => {
+    setShowCompositeItemFormModal(false);
+    setSelectedCompositeItem(null);
+  };
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -15,7 +29,13 @@ const MenuManagementPage: React.FC = () => {
           <div className="d-flex flex-column gap-4">
             <MealShiftManager />
             <hr />
-            <h3 className="mb-3">Gestión de Productos Compuestos</h3>
+            <div className="d-flex justify-content-between align-items-center mb-3">
+              <h3 className="mb-0">Gestión de Productos Compuestos</h3>
+              {/* <button className="btn btn-primary d-flex align-items-center" onClick={handleOpenCompositeItemForm}>
+                <Plus size={20} className="me-2" />
+                Nuevo Producto Compuesto
+              </button> */}
+            </div>
             <ItemManagement itemType="COMPUESTO" />
           </div>
         );
@@ -51,6 +71,14 @@ const MenuManagementPage: React.FC = () => {
       <div className="tab-content">
         {renderTabContent()}
       </div>
+
+      {showCompositeItemFormModal && (
+        <ItemForm
+          item={selectedCompositeItem}
+          onClose={handleCloseCompositeItemForm}
+          itemType="COMPUESTO" // Ensure the form knows it's for composite items
+        />
+      )}
     </div>
   );
 };
