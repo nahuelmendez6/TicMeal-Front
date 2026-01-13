@@ -4,7 +4,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import type { Supplier, CreateSupplierDto, UpdateSupplierDto } from '../types/supplier';
 import { useSuppliers } from '../hooks/useSuppliers';
-import { X } from 'lucide-react';
 
 // Esquema de validación con Zod
 const supplierSchema = z.object({

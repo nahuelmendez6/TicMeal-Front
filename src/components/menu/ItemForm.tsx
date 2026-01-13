@@ -61,7 +61,7 @@ const ItemForm: React.FC<Props> = ({
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-    const isNumericField = ['stock', 'minStock', 'maxOrder', 'cost'].includes(name);
+    const isNumericField = ['minStock', 'maxOrder', 'cost'].includes(name);
 
     setNewItem((prev: any) => ({
       ...prev,
@@ -94,18 +94,7 @@ const ItemForm: React.FC<Props> = ({
             </div>
 
             <div className="row">
-              <div className="col-sm-4 mb-3">
-                <label className="form-label">Stock</label>
-                <input
-                  type="number"
-                  name="stock"
-                  className="form-control"
-                  value={newItem.stock}
-                  onChange={handleChange}
-                />
-              </div>
-
-              <div className="col-sm-4 mb-3">
+              <div className="col-sm-6 mb-3">
                 <label className="form-label">Stock Mínimo</label>
                 <input
                   type="number"
@@ -116,7 +105,7 @@ const ItemForm: React.FC<Props> = ({
                 />
               </div>
 
-              <div className="col-sm-4 mb-3">
+              <div className="col-sm-6 mb-3">
                 <label className="form-label">Max. Orden</label>
                 <input
                   type="number"

@@ -10,9 +10,9 @@ export const usePurchaseOrders = () => {
     queryFn: getPurchaseOrders,
   });
 
-  const getPurchaseOrderQuery = (id: number) => useQuery({
+  const getPurchaseOrderQuery = (id: number | undefined) => useQuery({
     queryKey: ['purchaseOrder', id],
-    queryFn: () => getPurchaseOrderById(id),
+    queryFn: () => getPurchaseOrderById(id!),
     enabled: !!id,
   });
 
@@ -25,7 +25,7 @@ export const usePurchaseOrders = () => {
 
   const updatePurchaseOrderMutation = useMutation({
     mutationFn: ({ id, data }: { id: number; data: UpdatePurchaseOrderDto }) => updatePurchaseOrder(id, data),
-    onSuccess: () => {
+    onSuccess: (_, { id }) => {
       queryClient.invalidateQueries({ queryKey: ['purchaseOrders'] });
       queryClient.invalidateQueries({ queryKey: ['purchaseOrder', id] });
     },
@@ -33,7 +33,7 @@ export const usePurchaseOrders = () => {
 
   const receivePurchaseOrderMutation = useMutation({
     mutationFn: (id: number) => receivePurchaseOrder(id),
-    onSuccess: () => {
+    onSuccess: (_, id) => {
       queryClient.invalidateQueries({ queryKey: ['purchaseOrders'] });
       queryClient.invalidateQueries({ queryKey: ['purchaseOrder', id] });
     },

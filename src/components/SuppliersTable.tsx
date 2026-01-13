@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useSuppliers } from '../hooks/useSuppliers';
 import type { Supplier } from '../types/supplier';
 import { Edit, Trash2 } from 'lucide-react';

@@ -1,92 +1,166 @@
-import React, { useState } from "react";
-import IngredientForm from "../components/ingredient/IngredientForm"
-import IngredientTable from "../components/ingredient/IngredientTable";
-import { useIngredients } from "../hooks/useIngredients";
-import type { CreateIngredientDto } from "../services/ingredient.service";
-import DeleteModal from "../components/menu/DeleteModal";
+// src/pages/ItemIngredientManager.tsx
+import React, { useState, useEffect, useCallback } from 'react';
+import { Plus } from 'lucide-react';
+import { ingredientsService } from '../services/ingredient.service';
+import IngredientTable from '../components/ingredient/IngredientTable';
+import IngredientForm from '../components/ingredient/IngredientForm';
+import StockMovementModal from '../components/ingredient/StockMovementModal';
+import DeleteModal from '../components/menu/DeleteModal';
+import type { Ingredient } from '../types/ingtredient';
+import { useAuth } from '../contexts/AuthContext';
 
 const ItemIngredientManager: React.FC = () => {
-  const { ingredients, editing, loading, error, setEditing, saveIngredient, removeIngredient } = useIngredients();
-  const [dto, setDto] = useState<CreateIngredientDto>({ name: "", unit: "unit" });
+  const { token } = useAuth();
+  const [ingredients, setIngredients] = useState<Ingredient[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Estado para el modal de confirmación
+  // Modal States
+  const [isFormModalOpen, setIsFormModalOpen] = useState(false);
+  const [isStockModalOpen, setIsStockModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+  // Data for Modals
+  const [editingIngredient, setEditingIngredient] = useState<Ingredient | null>(null);
+  const [selectedIngredientForStock, setSelectedIngredientForStock] = useState<Ingredient | null>(null);
   const [ingredientToDelete, setIngredientToDelete] = useState<number | null>(null);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value, dataset } = e.target as HTMLInputElement;
+  const fetchIngredients = useCallback(async () => {
+    if (!token) return;
+    setLoading(true);
+    try {
+      const data = await ingredientsService.getAll(token);
+      setIngredients(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch ingredients');
+    } finally {
+      setLoading(false);
+    }
+  }, [token]);
 
-    // Parsea el valor si el input es de tipo numérico, si no, lo deja como string.
-    // Si el campo numérico está vacío, lo deja como está para que se muestre el placeholder.
-    const finalValue = dataset.type === 'number'
-      ? (value === '' ? '' : parseFloat(value))
-      : value;
+  useEffect(() => {
+    fetchIngredients();
+  }, [fetchIngredients]);
 
-    setDto(prevDto => ({
-      ...prevDto,
-      [name]: finalValue,
-    }));
+  // Handlers for Create/Edit Modal
+  const handleOpenFormModal = (ingredient: Ingredient | null = null) => {
+    setEditingIngredient(ingredient);
+    setIsFormModalOpen(true);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    saveIngredient(dto);
-    setDto({ name: "", unit: "unit" });
+  const handleCloseFormModal = () => {
+    setEditingIngredient(null);
+    setIsFormModalOpen(false);
   };
 
-  const handleEdit = (ingredient: any) => {
-    setEditing(ingredient);
-    setDto({ ...ingredient });
+  const handleSaveIngredient = async (ingredientData: Omit<Ingredient, 'id' | 'quantityInStock' | 'lots'>) => {
+    if (!token) return;
+    try {
+      if (editingIngredient) {
+        await ingredientsService.update(token, editingIngredient.id, ingredientData);
+      } else {
+        await ingredientsService.create(token, ingredientData);
+      }
+      fetchIngredients();
+      handleCloseFormModal();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to save ingredient');
+    }
   };
 
-  const cancelEdit = () => {
-    setEditing(null);
-    setDto({ name: "", unit: "unit" });
+  // Handlers for Stock Management Modal
+  const handleOpenStockModal = (ingredient: Ingredient) => {
+    setSelectedIngredientForStock(ingredient);
+    setIsStockModalOpen(true);
   };
 
-  // Abre el modal de confirmación
-  const handleDeleteRequest = (id: number) => {
+  const handleCloseStockModal = () => {
+    setSelectedIngredientForStock(null);
+    setIsStockModalOpen(false);
+  };
+
+  const handleStockMovementSuccess = () => {
+    fetchIngredients();
+  };
+
+  // Handlers for Delete Modal
+  const handleOpenDeleteModal = (id: number) => {
     setIngredientToDelete(id);
     setIsDeleteModalOpen(true);
   };
 
-  // Cierra el modal
-  const handleCloseModal = () => {
-    setIsDeleteModalOpen(false);
+  const handleCloseDeleteModal = () => {
     setIngredientToDelete(null);
+    setIsDeleteModalOpen(false);
   };
 
-  // Confirma y ejecuta la eliminación
-  const handleConfirmDelete = async () => {
-    if (ingredientToDelete) await removeIngredient(ingredientToDelete);
-    handleCloseModal();
+  const confirmDelete = async () => {
+    if (!token || !ingredientToDelete) return;
+    try {
+      await ingredientsService.remove(token, ingredientToDelete);
+      fetchIngredients();
+      handleCloseDeleteModal();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to delete ingredient');
+    }
   };
 
   return (
     <div className="card">
       <div className="card-body">
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          <h4 className="card-title">Gestión de Insumos</h4>
+          <button className="btn btn-primary" onClick={() => handleOpenFormModal()}>
+            <Plus size={18} className="me-2" /> Nuevo Insumo
+          </button>
+        </div>
 
-        <IngredientForm
-          dto={dto}
-          editing={editing}
-          loading={loading}
-          error={error}
-          onChange={handleChange}
-          onSubmit={handleSubmit}
-          onCancel={cancelEdit}
-        />
-
-        <IngredientTable ingredients={ingredients} onEdit={handleEdit} onDelete={handleDeleteRequest} />
-
+        {error && <div className="alert alert-danger">{error}</div>}
+        {loading ? (
+          <div className="text-center">
+            <div className="spinner-border" role="status">
+              <span className="visually-hidden">Cargando...</span>
+            </div>
+          </div>
+        ) : (
+          <IngredientTable
+            ingredients={ingredients}
+            onEdit={handleOpenFormModal}
+            onDelete={handleOpenDeleteModal}
+            onManageStock={handleOpenStockModal}
+          />
+        )}
       </div>
 
-      <DeleteModal
-        open={isDeleteModalOpen}
-        onClose={handleCloseModal}
-        onConfirm={handleConfirmDelete}
-        loading={loading}
-      />
+      {isFormModalOpen && (
+        <IngredientForm
+          editingIngredient={editingIngredient}
+          onSave={handleSaveIngredient}
+          onCancel={handleCloseFormModal}
+        />
+      )}
 
+      {isStockModalOpen && selectedIngredientForStock && (
+        <StockMovementModal
+          item={selectedIngredientForStock}
+          itemType="ingredient"
+          token={token!}
+          onClose={handleCloseStockModal}
+          onSuccess={() => {
+            handleCloseStockModal();
+            handleStockMovementSuccess();
+          }}
+        />
+      )}
+
+      {isDeleteModalOpen && (
+        <DeleteModal
+          open={isDeleteModalOpen}
+          onClose={handleCloseDeleteModal}
+          onConfirm={confirmDelete}
+          loading={false} // You can add loading state for delete if needed
+        />
+      )}
     </div>
   );
 };

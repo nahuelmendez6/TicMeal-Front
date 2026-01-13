@@ -1,6 +1,5 @@
 import React from 'react';
 import { type CreateMealShiftDto } from '../services/mealShiftService';
-import { Plus } from 'lucide-react';
 
 interface MealShiftFormModalProps {
   show: boolean;

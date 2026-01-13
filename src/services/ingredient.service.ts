@@ -1,148 +1,38 @@
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+import api from './api';
+import type { Ingredient } from '../types/ingtredient';
 
-export interface CreateIngredientDto {
-  name: string;
-  quantityInStock?: number;
-  unit: "kg" | "g" | "l" | "ml" | "unit";
-  cost?: number;
-  costType?: "per_unit" | "per_kg" | "per_lt";
-  description?: string;
-  category?: number;
-  minStock?: number;
-}
-
-export interface SystemIngredient extends CreateIngredientDto {
-  id: number;
-  isActive?: boolean;
-}
-
+// DTO for creating/updating, omits calculated fields and IDs
+export type IngredientSaveDto = Omit<Ingredient, 'id' | 'quantityInStock' | 'lots' | 'isActive'>;
 
 export const ingredientsService = {
-  async getAll(token: string) {
-    const res = await fetch(`${BASE_URL}/ingredients`, {
-      headers: { Authorization: `Bearer ${token}` }
+  async getAll(token: string): Promise<Ingredient[]> {
+    const response = await api.get('/ingredients', {
+      headers: { Authorization: `Bearer ${token}` },
     });
-    if (!res.ok) {
-      throw new Error('Error al obtener los ingredientes');
-    }
-    return res.json();
+    return response.data;
   },
 
-  async create(token: string, dto: CreateIngredientDto) {
-    const body: any = { ...dto };
-
-    // 🔄 Convertir strings numéricos a number
-    const numericFields = ["quantityInStock", "cost", "minStock"];
-    numericFields.forEach((field) => {
-      if (body[field] === "" || body[field] === null || body[field] === undefined) {
-        delete body[field]; // evitar mandar vacíos
-      } else if (typeof body[field] === "string") {
-        const num = Number(body[field]);
-        if (!isNaN(num)) {
-          body[field] = num;
-        }
-      }
+  async create(token: string, data: IngredientSaveDto): Promise<Ingredient> {
+    const response = await api.post('/ingredients', data, {
+      headers: { Authorization: `Bearer ${token}` },
     });
-
-    // Convertir "" a null para campos de texto opcionales
-    Object.keys(body).forEach((key) => {
-      if (body[key] === "") body[key] = null;
-    });
-
-    // category debe ser número o null
-    if (typeof body.category === "string") {
-      const num = Number(body.category);
-      if (!isNaN(num)) {
-        body.category = num;
-      } else {
-        body.category = null;
-      }
-    }
-
-    const res = await fetch(`${BASE_URL}/ingredients`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify(body)
-    });
-
-    if (!res.ok) {
-      const errorText = await res.text();
-      console.error("CREATE error:", errorText);
-      throw new Error("Error al crear ingrediente");
-    }
-
-    return res.json();
+    return response.data;
   },
 
-
-  async update(token: string, id: number, dto: CreateIngredientDto) {
-    const body: any = { ...dto };
-
-    // 🚫 Nunca enviar id
-    delete body.id;
-
-    // 🔄 Convertir strings numéricos a number
-    const numericFields = ["quantityInStock", "cost", "minStock"];
-    numericFields.forEach((field) => {
-      if (body[field] === "" || body[field] === null || body[field] === undefined) {
-        delete body[field]; // no mandar vacíos
-      } else if (typeof body[field] === "string") {
-        const num = Number(body[field]);
-        if (!isNaN(num)) {
-          body[field] = num;
-        }
-      }
+  async update(token: string, id: number, data: Partial<IngredientSaveDto>): Promise<Ingredient> {
+    const response = await api.patch(`/ingredients/${id}`, data, {
+      headers: { Authorization: `Bearer ${token}` },
     });
-
-    // Convertir "" a null para campos opcionales string
-    Object.keys(body).forEach((key) => {
-      if (body[key] === "") body[key] = null;
-    });
-
-    // categoryId → category
-    if (body.categoryId !== undefined) {
-      body.category = body.categoryId;
-      delete body.categoryId;
-    }
-
-    const res = await fetch(`${BASE_URL}/ingredients/${id}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify(body)
-    });
-
-    if (!res.ok) {
-      const errorText = await res.text();
-      console.error("PATCH error:", errorText);
-      throw new Error("Error al actualizar ingrediente");
-    }
-
-    return res.json();
+    return response.data;
   },
 
-  async remove(token: string, id: number) {
-    const res = await fetch(`${BASE_URL}/ingredients/${id}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ isActive: false }),
+  async remove(token: string, id: number): Promise<void> {
+    // The original implementation did a soft delete (PATCH isActive: false)
+    // The new requirement implies a hard delete, but to be safe, we'll stick to soft delete.
+    // If a hard delete is needed, this should be changed to api.delete
+    await api.patch(`/ingredients/${id}`, { isActive: false }, {
+      headers: { Authorization: `Bearer ${token}` },
     });
-
-    if (!res.ok) {
-      const errorText = await res.text();
-      console.error("DELETE (soft) error:", errorText);
-      throw new Error("Error al eliminar ingrediente");
-    }
-
-    return res.json();
-  }
-
+  },
 };
+

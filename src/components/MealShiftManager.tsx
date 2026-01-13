@@ -1,6 +1,6 @@
 // src/components/MealShiftManager.tsx
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useMealShifts } from '../hooks/useMealShifts';
 import { type CreateMealShiftDto } from '../services/mealShiftService';
 import { fetchShifts } from '../services/shift.services';
@@ -40,8 +40,6 @@ const MealShiftManager: React.FC = () => { // No props here
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [showEditConfirmModal, setShowEditConfirmModal] = useState(false);
   const [showFormModal, setShowFormModal] = useState(false); // New state for form modal
-
-  const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
   // Cargar datos para los selectores
   useEffect(() => {

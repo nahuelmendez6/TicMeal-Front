@@ -4,6 +4,7 @@ import ItemForm from '../components/menu/ItemForm';
 import ItemList from '../components/menu/ItemList';
 import RecipeEditor from '../components/menu/RecipeEditor';
 import DeleteModal from '../components/menu/DeleteModal';
+import StockMovementModal from '../components/ingredient/StockMovementModal'; // Importar el nuevo modal
 import { useMenuItems } from '../hooks/useMenu';
 import { useRecipes } from '../hooks/useRecipes';
 import { categoriesService } from '../services/categories.service';
@@ -12,9 +13,6 @@ import type { Category } from '../types/menu';
 import type { Ingredient } from '../types/ingtredient';
 import type { RecipeInput, RecipeIngredient } from '../types/recipe';
 import { Plus } from 'lucide-react';
-
-// type MenuItem = ReturnType<typeof useMenuItems>['items'][number];
-
 import type { MenuItem } from '../types/menu';
 
 interface ItemManagementProps {
@@ -39,9 +37,13 @@ const ItemManagement: React.FC<ItemManagementProps> = ({ itemType }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // State for Stock Movement Modal
+  const [isStockModalOpen, setIsStockModalOpen] = useState(false);
+  const [selectedItemForStock, setSelectedItemForStock] = useState<MenuItem | null>(null);
+
+
   const [newItem, setNewItem] = useState({
     name: '',
-    stock: 0,
     minStock: 0,
     categoryId: '',
     maxOrder: 0,
@@ -141,7 +143,6 @@ const ItemManagement: React.FC<ItemManagementProps> = ({ itemType }) => {
     setEditingItem(null);
     setNewItem({
       name: '',
-      stock: 0,
       minStock: 0,
       maxOrder: 0,
       categoryId: categories.length > 0 ? String(categories[0].id) : '',
@@ -157,7 +158,6 @@ const ItemManagement: React.FC<ItemManagementProps> = ({ itemType }) => {
     setEditingItem(item);
     setNewItem({
       name: item.name,
-      stock: item.stock ?? 0,
       minStock: item.minStock ?? 0,
       maxOrder: item.maxOrder ?? 0,
       cost: item.cost ?? 0,
@@ -180,7 +180,6 @@ const ItemManagement: React.FC<ItemManagementProps> = ({ itemType }) => {
     setEditingItem(null);
     setNewItem({
       name: '',
-      stock: 0,
       minStock: 0,
       maxOrder: 0,
       categoryId: categories.length > 0 ? String(categories[0].id) : '',
@@ -212,6 +211,20 @@ const ItemManagement: React.FC<ItemManagementProps> = ({ itemType }) => {
       setIsDeleteModalOpen(false);
       setItemToDelete(null);
     }
+  };
+
+  const handleManageStockClick = (item: MenuItem) => {
+    setSelectedItemForStock(item);
+    setIsStockModalOpen(true);
+  };
+
+  const handleCloseStockModal = () => {
+    setIsStockModalOpen(false);
+    setSelectedItemForStock(null);
+  };
+
+  const handleStockMovementSuccess = () => {
+    fetchItems(); // Recargar la lista de items para reflejar el nuevo stock
   };
 
   const filteredItems = useMemo(() => {
@@ -254,6 +267,7 @@ const ItemManagement: React.FC<ItemManagementProps> = ({ itemType }) => {
             selectedCategory={selectedCategory}
             onEdit={handleEditClick as any}
             onDelete={handleDeleteClick}
+            onManageStock={handleManageStockClick}
             itemType={itemType} // Pass itemType here
           />
         </div>
@@ -272,7 +286,7 @@ const ItemManagement: React.FC<ItemManagementProps> = ({ itemType }) => {
                 <ItemForm
                   editingItem={editingItem as any}
                   categories={categories}
-                  onSubmit={handleSubmit}
+                  onSubmit={handleSubmit as any}
                   newItemState={newItem}
                   setNewItemState={setNewItem}
                   recipeIngredients={recipeInputs}
@@ -291,6 +305,20 @@ const ItemManagement: React.FC<ItemManagementProps> = ({ itemType }) => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Stock Movement Modal */}
+      {isStockModalOpen && selectedItemForStock && (
+        <StockMovementModal
+          item={selectedItemForStock}
+          itemType="menuItem"
+          token={token}
+          onClose={handleCloseStockModal}
+          onSuccess={() => {
+            handleCloseStockModal();
+            handleStockMovementSuccess();
+          }}
+        />
       )}
 
       {/* Delete Confirmation Modal */}

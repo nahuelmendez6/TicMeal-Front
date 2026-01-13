@@ -1,11 +1,22 @@
 // src/types/ingredient.ts
 
+export interface IngredientLot {
+  id: number;
+  lotNumber: string;
+  expirationDate: string; // ISO date string
+  quantity: number;
+  unitCost: number;
+}
+
 export interface Ingredient {
   id: number;
   name: string;
   unit: string;
-  stock: number;
+  quantityInStock: number; // Calculated field
+  minStock?: number;
   companyId: string | null;
+  lots: IngredientLot[];
+  isActive?: boolean;
 }
 
 export interface RecipeIngredient {

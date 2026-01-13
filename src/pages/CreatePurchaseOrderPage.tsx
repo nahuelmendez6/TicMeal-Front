@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useForm, useFieldArray } from 'react-hook-form';
+import React from 'react';
+import { useForm, useFieldArray, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useNavigate } from 'react-router-dom';
@@ -8,39 +8,42 @@ import { useSuppliers } from '../hooks/useSuppliers';
 import { Plus, Trash2 } from 'lucide-react';
 import type { CreatePurchaseOrderDto } from '../types/purchaseOrder';
 
-// Zod schema for a single purchase order item
+// Zod schema for a single purchase order item (FORM STATE)
 const purchaseOrderItemSchema = z.object({
   productId: z.number().min(1, 'Producto requerido'),
-  productType: z.enum(['INGREDIENT', 'MENU_ITEM'], { required_error: 'Tipo de producto requerido' }),
+  productType: z.enum(['INGREDIENT', 'MENU_ITEM']),
   name: z.string().min(1, 'Nombre de producto requerido'), // This will be set by autocomplete
   quantity: z.number().min(1, 'Cantidad debe ser al menos 1'),
   unitCost: z.number().min(0.01, 'Costo unitario debe ser mayor que 0'),
   lot: z.string().optional(),
-  expirationDate: z.string().optional(), // Consider a date validation if using a date picker
+  expirationDate: z.string().optional(),
 });
 
-// Zod schema for the entire purchase order form
+// Zod schema for the entire purchase order form (FORM STATE)
 const createPurchaseOrderFormSchema = z.object({
   supplierId: z.number().min(1, 'Proveedor es requerido'),
-  orderDate: z.string().min(1, 'Fecha de orden es requerida'), // Consider a date validation
+  orderDate: z.string().min(1, 'Fecha de orden es requerida'),
   notes: z.string().optional(),
   items: z.array(purchaseOrderItemSchema).min(1, 'Debe haber al menos un item en la orden'),
 });
 
+// Type for our form values, inferred from the Zod schema
+type PurchaseOrderFormValues = z.infer<typeof createPurchaseOrderFormSchema>;
+
 const CreatePurchaseOrderPage: React.FC = () => {
   const navigate = useNavigate();
   const { createPurchaseOrder, isCreating } = usePurchaseOrders();
-  const { suppliers } = useSuppliers(); // To get supplier list for dropdown
+  const { suppliers } = useSuppliers();
 
   const {
     register,
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm<CreatePurchaseOrderDto>({
+  } = useForm<PurchaseOrderFormValues>({
     resolver: zodResolver(createPurchaseOrderFormSchema),
     defaultValues: {
-      orderDate: new Date().toISOString().split('T')[0], // Default to today's date
+      orderDate: new Date().toISOString().split('T')[0],
       items: [{ productId: 0, productType: 'INGREDIENT', name: '', quantity: 1, unitCost: 0 }],
     },
   });
@@ -50,21 +53,26 @@ const CreatePurchaseOrderPage: React.FC = () => {
     name: 'items',
   });
 
-  const onSubmit = async (data: CreatePurchaseOrderDto) => {
+  const onSubmit: SubmitHandler<PurchaseOrderFormValues> = async (data) => {
     try {
-      // Convert expirationDate to ISO string if it's a Date object from a date picker
-      const formattedData = {
+      // Transform form data to match CreatePurchaseOrderDto
+      const purchaseOrderDto: CreatePurchaseOrderDto = {
         ...data,
-        items: data.items.map(item => ({
+        items: data.items.map(({ name, ...item }) => ({ // remove 'name' from each item
           ...item,
           expirationDate: item.expirationDate ? new Date(item.expirationDate).toISOString() : undefined,
         })),
       };
-      const newOrder = await createPurchaseOrder(formattedData);
-      navigate(`/purchases/${newOrder.id}`); // Navigate to details page
+
+      const newOrder = await createPurchaseOrder(purchaseOrderDto);
+      if (newOrder) {
+        navigate(`/purchases/${newOrder.id}`);
+      } else {
+        // Handle case where order creation fails but doesn't throw
+        console.error('La creación de la orden no devolvió una orden.');
+      }
     } catch (error) {
       console.error('Error al crear la orden de compra:', error);
-      // Mostrar notificación de error
     }
   };
 
@@ -75,7 +83,6 @@ const CreatePurchaseOrderPage: React.FC = () => {
       <div className="card shadow-sm mb-4">
         <div className="card-body">
           <form onSubmit={handleSubmit(onSubmit)}>
-            {/* Sección 1: Datos Generales */}
             <h2 className="h5 mb-3 text-gray-700">Datos Generales</h2>
             <div className="row mb-3">
               <div className="col-md-6">
@@ -115,13 +122,11 @@ const CreatePurchaseOrderPage: React.FC = () => {
               ></textarea>
             </div>
 
-            {/* Sección 2: Items de la Orden */}
             <h2 className="h5 mb-3 text-gray-700">Items de la Orden</h2>
             {fields.map((field, index) => (
               <div key={field.id} className="row mb-3 align-items-end border-bottom pb-3">
                 <div className="col-md-4">
                   <label htmlFor={`items.${index}.name`} className="form-label">Producto</label>
-                  {/* Autocomplete para productos (ingredientes/menu items) iría aquí */}
                   <input
                     {...register(`items.${index}.name`)}
                     id={`items.${index}.name`}
@@ -159,8 +164,8 @@ const CreatePurchaseOrderPage: React.FC = () => {
                     className="form-control"
                   />
                 </div>
-                <div className="col-md-2">
-                  <label htmlFor={`items.${index}.expirationDate`} className="form-label">Fecha Venc.</label>
+                <div className="col-md-1">
+                  <label htmlFor={`items.${index}.expirationDate`} className="form-label">Venc.</label>
                   <input
                     {...register(`items.${index}.expirationDate`)}
                     id={`items.${index}.expirationDate`}
@@ -180,7 +185,7 @@ const CreatePurchaseOrderPage: React.FC = () => {
                 </div>
               </div>
             ))}
-            {errors.items && <div className="text-danger mb-3">{errors.items.message}</div>}
+            {errors.items && typeof errors.items.message === 'string' && <div className="text-danger mb-3">{errors.items.message}</div>}
 
             <button
               type="button"
