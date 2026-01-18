@@ -6,6 +6,7 @@ export interface IngredientLot {
   expirationDate: string; // ISO date string
   quantity: number;
   unitCost: number;
+  ingredient?: Ingredient;
 }
 
 export interface Ingredient {

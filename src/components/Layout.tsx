@@ -180,6 +180,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             Reportes
           </Link>
         </li>,
+        <li key="waste-logs" className={isActive('/waste-logs') ? 'active' : ''}>
+          <Link to="/waste-logs" className="d-flex align-items-center p-3 text-white">
+            <i className="bi bi-trash3 me-2"></i>
+            Historial de Mermas
+          </Link>
+        </li>,
         <li key="compras" className={isActive('/purchases-and-suppliers') ? 'active' : ''}>
           <Link to="/purchases-and-suppliers" className="d-flex align-items-center p-3 text-white">
             <i className="bi bi-cart3 me-2"></i>

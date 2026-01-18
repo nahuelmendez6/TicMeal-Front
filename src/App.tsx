@@ -23,6 +23,7 @@ import MealShiftsPage from './pages/MealShiftsPage';
 import PurchasesAndSuppliersPage from './pages/PurchasesAndSuppliersPage';
 import CreatePurchaseOrderPage from './pages/CreatePurchaseOrderPage';
 import PurchaseOrderDetailsPage from './pages/PurchaseOrderDetailsPage';
+import WasteLogPage from './pages/WasteLogPage';
 import './App.css';
 
 function App() {
@@ -87,6 +88,16 @@ function App() {
               <ProtectedRoute>
                 <Layout>  
                   <ReportsPage />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/waste-logs"
+            element={
+              <ProtectedRoute>
+                <Layout>  
+                  <WasteLogPage />
                 </Layout>
               </ProtectedRoute>
             }
