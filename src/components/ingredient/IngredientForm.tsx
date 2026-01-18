@@ -12,16 +12,19 @@ const IngredientForm: React.FC<IngredientFormProps> = ({ editingIngredient, onSa
   const [name, setName] = useState('');
   const [unit, setUnit] = useState('KILOGRAM');
   const [minStock, setMinStock] = useState<number | ''>('');
+  const [shrinkagePercentage, setShrinkagePercentage] = useState<number | ''>('');
 
   useEffect(() => {
     if (editingIngredient) {
       setName(editingIngredient.name);
       setUnit(editingIngredient.unit);
       setMinStock(editingIngredient.minStock ?? '');
+      setShrinkagePercentage(editingIngredient.shrinkagePercentage ?? '');
     } else {
       setName('');
       setUnit('KILOGRAM');
       setMinStock('');
+      setShrinkagePercentage('');
     }
   }, [editingIngredient]);
 
@@ -31,6 +34,7 @@ const IngredientForm: React.FC<IngredientFormProps> = ({ editingIngredient, onSa
       name,
       unit,
       minStock: Number(minStock),
+      shrinkagePercentage: Number(shrinkagePercentage),
       companyId: null, // Assuming companyId is handled by the backend
     });
   };
@@ -78,6 +82,17 @@ const IngredientForm: React.FC<IngredientFormProps> = ({ editingIngredient, onSa
                   id="minStock"
                   value={minStock}
                   onChange={(e) => setMinStock(e.target.value === '' ? '' : Number(e.target.value))}
+                />
+              </div>
+              <div className="mb-3">
+                <label htmlFor="shrinkagePercentage" className="form-label">Merma (%)</label>
+                <input
+                  type="number"
+                  className="form-control"
+                  id="shrinkagePercentage"
+                  value={shrinkagePercentage}
+                  onChange={(e) => setShrinkagePercentage(e.target.value === '' ? '' : Number(e.target.value))}
+                  placeholder="Ej: 20"
                 />
               </div>
             </div>

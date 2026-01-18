@@ -47,7 +47,6 @@ const ItemManagement: React.FC<ItemManagementProps> = ({ itemType }) => {
     minStock: 0,
     categoryId: '',
     maxOrder: 0,
-    cost: 0,
     iconName: 'Coffee',
     type: itemType || 'SIMPLE',
   });
@@ -146,7 +145,6 @@ const ItemManagement: React.FC<ItemManagementProps> = ({ itemType }) => {
       minStock: 0,
       maxOrder: 0,
       categoryId: categories.length > 0 ? String(categories[0].id) : '',
-      cost: 0,
       iconName: 'Coffee',
       type: itemType || 'SIMPLE',
     });
@@ -160,7 +158,6 @@ const ItemManagement: React.FC<ItemManagementProps> = ({ itemType }) => {
       name: item.name,
       minStock: item.minStock ?? 0,
       maxOrder: item.maxOrder ?? 0,
-      cost: item.cost ?? 0,
       categoryId: String(item.category?.id ?? ''),
       iconName: item.iconName ?? 'Coffee',
       type: item.type || itemType || 'SIMPLE',
@@ -183,7 +180,6 @@ const ItemManagement: React.FC<ItemManagementProps> = ({ itemType }) => {
       minStock: 0,
       maxOrder: 0,
       categoryId: categories.length > 0 ? String(categories[0].id) : '',
-      cost: 0,
       iconName: 'Coffee',
       type: itemType || 'SIMPLE',
     });

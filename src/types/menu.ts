@@ -20,7 +20,8 @@ export interface RecipeIngredientRelation {
 export interface MenuItem {
   id: number;
   name: string;
-  quantityInStock: number; // Calculated field
+  stock?: number; // Backend might still send this, but quantityInStock is the source of truth
+  quantityInStock: number; // Calculated field: sum of lots' quantities
   iconName: string | null;
   cost: number | null;
   category: Category | null;
@@ -37,7 +38,6 @@ export interface MenuItemCreate {
   name: string;
   minStock?: number;
   maxOrder?: number;
-  cost?: number;
   categoryId?: number;
   iconName?: string;
   type: 'SIMPLE' | 'COMPUESTO';
@@ -47,7 +47,6 @@ export interface MenuItemUpdate {
   name?: string;
   minStock?: number;
   maxOrder?: number;
-  cost?: number;
   categoryId?: number;
   iconName?: string;
   isActive?: boolean;

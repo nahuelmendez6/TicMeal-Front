@@ -61,7 +61,6 @@ const ItemList: React.FC<Props> = ({ items, onEdit, onDelete, onManageStock, ite
                 <th style={{ position: 'sticky', top: 0, zIndex: 1 }}>Stock Actual</th>
                 <th style={{ position: 'sticky', top: 0, zIndex: 1 }}>Mínimo</th>
                 <th style={{ position: 'sticky', top: 0, zIndex: 1 }}>Max Orden</th>
-                <th style={{ position: 'sticky', top: 0, zIndex: 1 }}>Costo</th>
               </>
             )}
             <th style={{ position: 'sticky', top: 0, zIndex: 1, textAlign: 'right' }}>Acciones</th>
@@ -82,7 +81,6 @@ const ItemList: React.FC<Props> = ({ items, onEdit, onDelete, onManageStock, ite
                   <td>{item.quantityInStock ?? "—"}</td>
                   <td>{item.minStock || "—"}</td>
                   <td>{item.maxOrder || "—"}</td>
-                  <td>{item.cost ? `${item.cost}` : "—"}</td>
                 </>
               )}
               <td className="text-end">

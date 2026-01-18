@@ -9,7 +9,7 @@ const ShiftManagement: React.FC = () => {
     <div className="container-fluid">
       <h1 className="h3 mb-4 text-gray-800">Gestión de Turnos</h1>
 
-      <ul className="nav nav-tabs mb-4">
+      <ul className="nav nav-underline mb-4">
         <li className="nav-item">
           <button
             className={`nav-link ${activeTab === 'shiftCrud' ? 'active' : ''}`}

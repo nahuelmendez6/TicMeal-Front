@@ -14,6 +14,7 @@ export interface Ingredient {
   unit: string;
   quantityInStock: number; // Calculated field
   minStock?: number;
+  shrinkagePercentage?: number;
   companyId: string | null;
   lots: IngredientLot[];
   isActive?: boolean;

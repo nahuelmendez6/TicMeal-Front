@@ -1,21 +1,6 @@
 import { useState, useCallback } from "react";
 import { menuItemsService } from "../services/menu.items.service";
-
-interface MenuItem {
-  id: number;
-  name: string;
-  maxOrder: number | null;
-  stock: number | null;
-  minStock: number | null;
-  cost: number | null;
-  category: {
-    id: number;
-    name: string;
-  } | null;
-  iconName: string | null;
-  isActive: boolean;
-  recipeIngredients: any[];
-}
+import type { MenuItem } from "../types/menu";
 
 export const useMenuItems = () => {
   const [items, setItems] = useState<MenuItem[]>([]);
@@ -25,8 +10,11 @@ export const useMenuItems = () => {
     try {
       setLoading(true);
       const data = await menuItemsService.getAll();
-      // Filtramos solo los activos
-      setItems(data.filter((i: MenuItem) => i.isActive));
+      const processedData = data.map((item: MenuItem) => ({
+        ...item,
+        quantityInStock: item.lots ? item.lots.reduce((sum, lot) => sum + lot.quantity, 0) : 0,
+      }));
+      setItems(processedData.filter((i: MenuItem) => i.isActive));
     } catch (error) {
       console.error("Error fetching menu items:", error);
     } finally {

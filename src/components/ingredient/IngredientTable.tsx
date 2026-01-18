@@ -20,6 +20,7 @@ const IngredientTable: React.FC<IngredientTableProps> = ({ ingredients, onEdit, 
             <th style={{ position: 'sticky', top: 0, zIndex: 1 }}>Unidad</th>
             <th style={{ position: 'sticky', top: 0, zIndex: 1 }}>Stock Actual</th>
             <th style={{ position: 'sticky', top: 0, zIndex: 1 }}>Stock Mínimo</th>
+            <th style={{ position: 'sticky', top: 0, zIndex: 1 }}>Merma (%)</th>
             <th style={{ position: 'sticky', top: 0, zIndex: 1, textAlign: 'right' }}>Acciones</th>
           </tr>
         </thead>
@@ -30,6 +31,7 @@ const IngredientTable: React.FC<IngredientTableProps> = ({ ingredients, onEdit, 
               <td>{ingredient.unit}</td>
               <td>{ingredient.quantityInStock ?? 0}</td>
               <td>{ingredient.minStock ?? 'N/A'}</td>
+              <td>{ingredient.shrinkagePercentage ?? 0}%</td>
               <td className="text-end">
                 <button
                   className="btn btn-sm btn-outline-success me-2"
