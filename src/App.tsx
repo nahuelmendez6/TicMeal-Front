@@ -24,6 +24,8 @@ import PurchasesAndSuppliersPage from './pages/PurchasesAndSuppliersPage';
 import CreatePurchaseOrderPage from './pages/CreatePurchaseOrderPage';
 import PurchaseOrderDetailsPage from './pages/PurchaseOrderDetailsPage';
 import WasteLogPage from './pages/WasteLogPage';
+import InventoryAuditPage from './pages/InventoryAuditPage'; // New import
+import InventoryVariancePage from './pages/InventoryVariancePage'; // New import
 import './App.css';
 
 function App() {
@@ -98,6 +100,26 @@ function App() {
               <ProtectedRoute>
                 <Layout>  
                   <WasteLogPage />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/inventory/audit"
+            element={
+              <ProtectedRoute>
+                <Layout>  
+                  <InventoryAuditPage />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/reports/inventory-variance"
+            element={
+              <ProtectedRoute>
+                <Layout>  
+                  <InventoryVariancePage />
                 </Layout>
               </ProtectedRoute>
             }
@@ -191,3 +213,4 @@ function App() {
 }
 
 export default App;
+

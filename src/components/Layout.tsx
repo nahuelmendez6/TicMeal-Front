@@ -174,6 +174,20 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             Generador QR
           </Link>
         </li>,
+        // New Inventory Section
+        <li key="inventory-header" className="menu-header mt-3 mb-1 text-muted text-uppercase small">
+          <Link to="/inventory/audit" className="d-flex align-items-center p-3 text-white">
+            <i className="bi bi-clipboard-check me-2"></i>
+          Inventario
+          </Link>
+        </li>,
+        <li key="inventory-audit" className={isActive('/inventory/audit') ? 'active' : ''}>
+          <Link to="/inventory/audit" className="d-flex align-items-center p-3 text-white">
+            <i className="bi bi-clipboard-check me-2"></i>
+            Auditoría Física
+          </Link>
+        </li>,
+        // End New Inventory Section
         <li key="reports" className={isActive('/reports') ? 'active' : ''}>
           <Link to="/reports" className="d-flex align-items-center p-3 text-white">
             <i className="bi bi-bar-chart me-2"></i>
@@ -184,6 +198,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <Link to="/waste-logs" className="d-flex align-items-center p-3 text-white">
             <i className="bi bi-trash3 me-2"></i>
             Historial de Mermas
+          </Link>
+        </li>,
+        <li key="inventory-variance-report" className={isActive('/reports/inventory-variance') ? 'active' : ''}>
+          <Link to="/reports/inventory-variance" className="d-flex align-items-center p-3 text-white">
+            <i className="bi bi-graph-up me-2"></i>
+            Varianza de Inventario
           </Link>
         </li>,
         <li key="compras" className={isActive('/purchases-and-suppliers') ? 'active' : ''}>
@@ -214,6 +234,15 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <Link to="/menu-management" className="d-flex align-items-center p-3 text-white">
             <i className="bi bi-journal-text me-2"></i>
             Menú
+          </Link>
+        </li>,
+        <li key="inventory-header" className="menu-header mt-3 mb-1 text-muted text-uppercase small">
+          Inventario
+        </li>,
+        <li key="inventory-audit" className={isActive('/inventory/audit') ? 'active' : ''}>
+          <Link to="/inventory/audit" className="d-flex align-items-center p-3 text-white">
+            <i className="bi bi-clipboard-check me-2"></i>
+            Auditoría Física
           </Link>
         </li>,
         <li key="kitchen-ticket-create" className={isActive('/kitchen-ticket-create') ? 'active' : ''}>

@@ -1,21 +1,40 @@
 // src/types/recipe.ts
-import type { Ingredient } from './ingtredient';
 
 /**
- * Representa la estructura completa de un ingrediente dentro de una receta,
- * tal como la devuelve el backend. Incluye el objeto de ingrediente anidado.
+ * Represents the detailed cost breakdown of a menu item recipe.
  */
-export interface RecipeIngredient {
-  id: number;
-  quantity: number;
-  ingredient: Ingredient;
+export interface RecipeCosting {
+  menuItemId: number;
+  menuItemName: string;
+  totalCost: number;
+  ingredients: RecipeCostingIngredient[];
 }
 
 /**
- * Representa la estructura simplificada para enviar al backend al crear/actualizar
- * una receta. Solo contiene los IDs y cantidades.
+ * Represents a single ingredient within the recipe cost breakdown.
  */
-export interface RecipeInput {
+export interface RecipeCostingIngredient {
   ingredientId: number;
-  quantity: number;
+  name: string;
+  /**
+   * The quantity required for the recipe *before* accounting for shrinkage (gross weight).
+   * This is the weight you need to start with.
+   */
+  grossQuantity: number;
+  /**
+   * The final quantity used in the recipe *after* preparation (net weight).
+   */
+  netQuantity: number;
+  /**
+   * The unit of measurement for the ingredient.
+   */
+  unit: string;
+  /**
+   * The total cost of this ingredient for the recipe, based on FIFO lot cost.
+   */
+  cost: number;
+  /**
+   * The shrinkage percentage applied.
+   */
+  shrinkagePercentage: number;
 }
