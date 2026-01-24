@@ -1,11 +1,11 @@
 // src/hooks/useInventoryVarianceReport.ts
 import { useState, useCallback } from 'react';
-import { getInventoryVarianceReport } from '../services/reportService'; // Assuming this function exists
-import type { InventoryVariance } from '../types/inventory';
-import { useAuth } from '../contexts/AuthContext'; // Assuming useAuth for token
+import { getInventoryVarianceReport } from '../services/reportService';
+import type { InventoryVariance } from '../types/inventory'; // Import the new type
+import { useAuth } from '../contexts/AuthContext';
 
 export const useInventoryVarianceReport = () => {
-  const [reportData, setReportData] = useState<InventoryVariance[]>([]);
+  const [reportData, setReportData] = useState<InventoryVariance | null>(null); // Changed type and initial state
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { token } = useAuth();
@@ -19,7 +19,7 @@ export const useInventoryVarianceReport = () => {
     setError(null);
     try {
       const data = await getInventoryVarianceReport(token, startDate, endDate);
-      setReportData(data);
+      setReportData(data); // Store the object directly
     } catch (err) {
       setError('Failed to fetch inventory variance report.');
       console.error(err);

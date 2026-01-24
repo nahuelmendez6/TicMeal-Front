@@ -36,5 +36,7 @@ export const getInventoryVarianceReport = async (token: string, startDate: strin
     throw new Error(errorData.message || `Error ${response.status}: ${response.statusText}`);
   }
 
-  return response.json();
+  const data = await response.json();
+  console.log('Raw data from getInventoryVarianceReport:', data); // Add this line
+  return data;
 };

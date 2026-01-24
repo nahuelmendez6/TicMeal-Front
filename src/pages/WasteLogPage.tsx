@@ -2,7 +2,7 @@
 import React, { useEffect } from 'react';
 import { useWaste } from '../hooks/useWaste';
 import WasteLogTable from '../components/waste/WasteLogTable';
-import Layout from '../components/Layout';
+
 
 const WasteLogPage: React.FC = () => {
   const { wasteLogs, isLoading, error, fetchWasteLogs } = useWaste();
@@ -28,7 +28,7 @@ const WasteLogPage: React.FC = () => {
   };
 
   return (
-    <Layout>
+    // <Layout>
       <div className="container-fluid mt-4">
         <div className="card">
           <div className="card-header">
@@ -39,7 +39,7 @@ const WasteLogPage: React.FC = () => {
           </div>
         </div>
       </div>
-    </Layout>
+    // </Layout>
   );
 };
 
