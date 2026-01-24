@@ -1,47 +1,30 @@
-// src/types/inventory.ts
+import type { Ingredient } from './ingtredient';
+import type { MenuItem } from './menu';
 
-import { Ingredient } from './ingtredient';
+export type AuditType = 'ingredient' | 'menu_item';
 
-/**
- * Represents a single line item within a stock audit.
- */
-export interface StockAuditLine {
-  ingredientId: number;
-  physicalStock: number;
-  theoreticalStock: number;
-  unitCostAtAudit: number; // Cost of the ingredient at the moment of the audit
-}
-
-/**
- * Represents the complete stock audit payload to be sent to the backend.
- */
-export interface StockAudit {
-  observations: string;
-  auditLines: StockAuditLine[];
-}
-
-/**
- * Represents an ingredient prepared for the audit view, including calculated fields.
- */
+// This is the type used by the current InventoryAuditTable
 export interface AuditIngredient extends Ingredient {
-  physicalStock: number | ''; // User input
+  physicalStock: number | '';
   difference: number;
   financialImpact: number;
 }
 
-/**
- * Represents the data for the inventory variance report.
- */
-export interface InventoryVariance {
-  auditId: number;
-  auditDate: string;
-  userName: string;
-  observations: string;
-  totalVarianceValue: number;
-  adjustments: Array<{
-    ingredientName: string;
-    lotNumber: string;
-    quantityAdjusted: number;
-    costImpact: number;
-  }>;
+// A new type for menu item audits
+export interface AuditMenuItem extends MenuItem {
+  physicalStock: number | '';
+  difference: number;
+  financialImpact: number;
+}
+
+// A generic auditable item
+export type AuditableItem = AuditIngredient | AuditMenuItem;
+
+// The payload for the audit submission (matches CreateStockAuditDto)
+export interface StockAuditPayload {
+  auditType: AuditType;
+  ingredientId?: number;
+  menuItemId?: number;
+  physicalStock: number;
+  observations?: string;
 }

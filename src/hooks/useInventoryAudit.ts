@@ -1,21 +1,23 @@
 // src/hooks/useInventoryAudit.ts
 import { useState, useEffect, useCallback } from 'react';
 import { inventoryService } from '../services/inventory.service';
-import { ingredientsService } from '../services/ingredient.service'; // Corrected import name
-import type { AuditIngredient, StockAudit } from '../types/inventory';
+import { ingredientsService } from '../services/ingredient.service';
+import { menuItemsService } from '../services/menu.items.service';
+import type { StockAuditPayload, AuditType, AuditableItem, AuditIngredient, AuditMenuItem } from '../types/inventory';
 import type { Ingredient } from '../types/ingtredient';
-import { useAuth } from '../contexts/AuthContext'; // Import useAuth
+import type { MenuItem } from '../types/menu';
+import { useAuth } from '../contexts/AuthContext';
 
-export const useInventoryAudit = () => {
-  const [auditIngredients, setAuditIngredients] = useState<AuditIngredient[]>([]);
+export const useInventoryAudit = (auditType: AuditType) => {
+  const [auditableItems, setAuditableItems] = useState<AuditableItem[]>([]);
   const [observations, setObservations] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { token } = useAuth(); // Get token from AuthContext
+  const { token } = useAuth();
 
-  const fetchIngredientsForAudit = useCallback(async () => {
+  const fetchItemsForAudit = useCallback(async () => {
     if (!token) {
       setError('Authentication token not found.');
       return;
@@ -23,46 +25,66 @@ export const useInventoryAudit = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const ingredients: Ingredient[] = await ingredientsService.getAll(token); // Pass token
-      const initialAuditIngredients: AuditIngredient[] = ingredients.map(ing => ({
-        ...ing,
-        physicalStock: '', // Initialize physical stock as empty for user input
-        difference: 0,
-        financialImpact: 0,
-      }));
-      setAuditIngredients(initialAuditIngredients);
+      let items: AuditableItem[];
+      if (auditType === 'ingredient') {
+        const ingredients: Ingredient[] = await ingredientsService.getAll(token);
+        items = ingredients.map((ing): AuditIngredient => ({
+          ...ing,
+          quantityInStock: ing.lots.reduce((sum, lot) => sum + lot.quantity, 0),
+          physicalStock: '',
+          difference: 0,
+          financialImpact: 0,
+        }));
+      } else {
+        const menuItems: MenuItem[] = await menuItemsService.getAll();
+        items = menuItems
+          .filter(item => item.isActive && item.type === 'SIMPLE') // Filter out inactive and compound items
+          .map((item): AuditMenuItem => ({
+            ...item,
+            quantityInStock: item.lots.reduce((sum, lot) => sum + lot.quantity, 0),
+            physicalStock: '',
+            difference: 0,
+            financialImpact: 0,
+          }));
+      }
+      setAuditableItems(items);
     } catch (err) {
-      setError('Failed to fetch ingredients for audit.');
+      setError(`Failed to fetch ${auditType}s for audit.`);
       console.error(err);
     } finally {
       setIsLoading(false);
     }
-  }, [token]); // Depend on token
+  }, [token, auditType]);
 
   useEffect(() => {
-    fetchIngredientsForAudit();
-  }, [fetchIngredientsForAudit]);
+    fetchItemsForAudit();
+  }, [fetchItemsForAudit]);
 
-  const handlePhysicalStockChange = useCallback((ingredientId: number, value: string) => {
-    setAuditIngredients(prevIngredients =>
-      prevIngredients.map(ing => {
-        if (ing.id === ingredientId) {
+  const handlePhysicalStockChange = useCallback((itemId: number, value: string) => {
+    setAuditableItems(prevItems =>
+      prevItems.map(item => {
+        if (item.id === itemId) {
           const physicalStock = value === '' ? '' : parseFloat(value);
-          const theoreticalStock = ing.quantityInStock ?? 0;
+          const theoreticalStock = item.quantityInStock ?? 0;
           const difference = typeof physicalStock === 'number' ? physicalStock - theoreticalStock : 0;
-          // Assuming unitCost is available on the ingredient or can be fetched
-          // For now, let's use a placeholder or assume it's part of the ingredient object
-          const unitCost = ing.lots && ing.lots.length > 0 ? ing.lots[0].unitCost : 0; // Simplistic: use first lot's cost
+          
+          let unitCost = 0;
+          if ('lots' in item && item.lots && item.lots.length > 0) { // Ingredient
+            unitCost = item.lots[0].unitCost;
+          } else if ('cost' in item && item.cost) { // MenuItem
+            unitCost = item.cost;
+          }
+
           const financialImpact = difference * unitCost;
 
           return {
-            ...ing,
+            ...item,
             physicalStock,
             difference,
             financialImpact,
           };
         }
-        return ing;
+        return item;
       })
     );
   }, []);
@@ -75,29 +97,48 @@ export const useInventoryAudit = () => {
     setIsSubmitting(true);
     setError(null);
     try {
-      const auditLines = auditIngredients
-        .filter(ing => typeof ing.physicalStock === 'number' && ing.physicalStock >= 0) // Only submit valid entries
-        .map(ing => ({
-          ingredientId: ing.id,
-          physicalStock: ing.physicalStock as number,
-          theoreticalStock: ing.quantityInStock ?? 0,
-          unitCostAtAudit: ing.lots && ing.lots.length > 0 ? ing.lots[0].unitCost : 0, // Simplistic
-        }));
+      const itemsToAudit = auditableItems
+        .filter(item => typeof item.physicalStock === 'number' && !isNaN(item.physicalStock) && item.physicalStock >= 0);
 
-      if (auditLines.length === 0) {
-        setError('No hay ingredientes válidos para auditar.');
+      if (itemsToAudit.length === 0) {
+        setError(`No valid ${auditType}s to audit.`);
         setIsSubmitting(false);
         return false;
       }
 
-      const auditData: StockAudit = {
-        observations,
-        auditLines,
-      };
+      const backendAuditType: AuditType = auditType === 'ingredient' ? 'ingredient' : 'menu_item';
 
-      await inventoryService.postStockAudit(auditData); // Token is handled by api.ts for inventoryService
-      // Optionally refetch ingredients to update theoretical stock after audit
-      await fetchIngredientsForAudit();
+      // Make individual API calls for each audited item
+      const auditPromises = itemsToAudit.map(async (item) => {
+        const payload: StockAuditPayload = {
+          auditType: backendAuditType,
+          physicalStock: item.physicalStock as number,
+          observations: observations || undefined, // Send observations if not empty
+        };
+
+        if (auditType === 'ingredient') { // Use 'INGREDIENT' directly as it's the backend enum value
+          if (typeof item.id === 'number') {
+            payload.ingredientId = item.id;
+          } else {
+            console.error('Invalid ingredient ID:', item.id);
+            throw new Error('Invalid ingredient ID encountered during audit submission.');
+          }
+        } else { // auditType === 'MENU_ITEM'
+          if (typeof item.id === 'number') {
+            payload.menuItemId = item.id;
+          } else {
+            console.error('Invalid menu item ID:', item.id);
+            throw new Error('Invalid menu item ID encountered during audit submission.');
+          }
+        }
+
+        console.log('Sending audit payload:', payload); // Add this line for debugging
+        await inventoryService.postStockAudit(payload);
+      });
+
+      await Promise.all(auditPromises);
+
+      await fetchItemsForAudit(); // Refetch to clear the form and show fresh data
       setObservations(''); // Clear observations after successful submission
       return true;
     } catch (err) {
@@ -107,16 +148,15 @@ export const useInventoryAudit = () => {
     } finally {
       setIsSubmitting(false);
     }
-  }, [auditIngredients, observations, fetchIngredientsForAudit, token]); // Depend on token
+  }, [auditableItems, observations, fetchItemsForAudit, token, auditType]);
 
   return {
-    auditIngredients,
+    auditableItems,
     observations,
     setObservations,
     isLoading,
     error,
     isSubmitting,
-    fetchIngredientsForAudit,
     handlePhysicalStockChange,
     submitAudit,
   };
