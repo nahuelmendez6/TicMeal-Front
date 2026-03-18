@@ -5,23 +5,19 @@ import { io } from 'socket.io-client';
 import {
   Bell,
   Users,
-  Clock,
-  BookText,
-  QrCode,
-  ClipboardCheck,
-  BarChart2,
-  Trash2,
-  AreaChart,
-  ShoppingCart,
-  ClipboardList,
-  PlusSquare,
-  CookingPot,
-  Monitor,
-  ScanLine,
-  CalendarCheck,
   LogOut,
   UserCircle,
-  Menu as MenuIcon
+  Menu as MenuIcon,
+  ChevronDown,
+  Utensils,
+  Archive,
+  FileText,
+  Settings,
+  Ticket,
+  ClipboardEdit,
+  CookingPot,
+  BookText,
+  ShoppingCart
 } from 'lucide-react';
 
 import logonavbar from '../assets/sidebar-logo.png';
@@ -30,7 +26,7 @@ interface LayoutProps {
   children: React.ReactNode;
 }
 
-interface Ticket {
+interface TicketData {
   id: number;
   status: string;
   date: string;
@@ -56,16 +52,30 @@ interface LowStockNotification {
     minStock: number;
 }
 
-const NavLink: React.FC<{ to: string; title: string; children: React.ReactNode }> = ({ to, title, children }) => {
-  const location = useLocation();
-  const isActive = location.pathname === to;
-
-  return (
-    <Link to={to} title={title} className={`nav-link ${isActive ? 'active' : ''} d-flex align-items-center p-2`}>
-      {children}
-    </Link>
-  );
-};
+const NavLink: React.FC<{ to: string; title: string; children: React.ReactNode, className?: string }> = ({ to, title, children, className }) => {
+    const location = useLocation();
+    const isActive = location.pathname === to;
+  
+    return (
+      <Link to={to} title={title} className={`dropdown-item ${isActive ? 'active' : ''} ${className}`}>
+        {children}
+      </Link>
+    );
+  };
+  
+  const NavDropdown: React.FC<{ title: string; icon: React.ReactNode; children: React.ReactNode }> = ({ title, icon, children }) => {
+    return (
+      <li className="nav-item dropdown">
+        <a className="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          {icon}
+          <span className="ms-2">{title}</span>
+        </a>
+        <ul className="dropdown-menu" aria-labelledby="navbarDropdown">
+          {children}
+        </ul>
+      </li>
+    );
+  };
 
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
@@ -77,6 +87,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
 
   useEffect(() => {
+    import('bootstrap/dist/js/bootstrap.bundle.min.js').then((bootstrap) => {
+        const dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'));
+        dropdownElementList.map(function (dropdownToggleEl) {
+          return new bootstrap.Dropdown(dropdownToggleEl);
+        });
+    })
     let companyId = (userProfile as { companyId?: number; company?: { id?: number } })?.companyId || (userProfile as { companyId?: number; company?: { id?: number } })?.company?.id;
     
     if (!companyId) {
@@ -109,8 +125,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     socket.on('connect', () => console.log('[Layout] Socket connected. ID:', socket.id));
     socket.on('connect_error', (err) => console.error('[Layout] Socket connection error:', err));
     socket.on('lowStockAlert', (payload: LowStockNotification) => setNotifications((prev) => [payload, ...prev]));
-    socket.on('newTicket', (ticket: Ticket) => window.dispatchEvent(new CustomEvent('newTicket', { detail: ticket })));
-    socket.on('ticketUpdated', (updatedTicket: Ticket) => window.dispatchEvent(new CustomEvent('ticketUpdated', { detail: updatedTicket })));
+    socket.on('newTicket', (ticket: TicketData) => window.dispatchEvent(new CustomEvent('newTicket', { detail: ticket })));
+    socket.on('ticketUpdated', (updatedTicket: TicketData) => window.dispatchEvent(new CustomEvent('ticketUpdated', { detail: updatedTicket })));
 
     return () => {
       socket.disconnect();
@@ -122,53 +138,67 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const isEmployee = !!userProfile?.role;
 
   const renderMenuItems = () => {
-    const menuItems: React.ReactNode[] = [];
-
     if (isAdmin) {
-      menuItems.push(
-        <NavLink key="users" to="/users" title="Usuarios"><Users size={20} /></NavLink>,
-        <NavLink key="shifts" to="/shifts" title="Turnos"><Clock size={20} /></NavLink>,
-        <NavLink key="menu" to="/menu-management" title="Menú"><BookText size={20} /></NavLink>,
-        <NavLink key="qr-generator" to="/qr-generator" title="Generador QR"><QrCode size={20} /></NavLink>,
-        <NavLink key="inventory-audit" to="/inventory/audit" title="Auditoría de Inventario"><ClipboardCheck size={20} /></NavLink>,
-        <NavLink key="reports" to="/reports" title="Reportes"><BarChart2 size={20} /></NavLink>,
-        <NavLink key="waste-logs" to="/waste-logs" title="Historial de Mermas"><Trash2 size={20} /></NavLink>,
-        <NavLink key="inventory-variance-report" to="/reports/inventory-variance" title="Varianza de Inventario"><AreaChart size={20} /></NavLink>,
-        <NavLink key="compras" to="/purchases-and-suppliers" title="Compras"><ShoppingCart size={20} /></NavLink>
-      );
+        return (
+            <>
+              <NavDropdown title="Restaurant" icon={<Utensils size={20} />}>
+                <NavLink to="/menu-management" title="Menu Management">Menu Management</NavLink>
+                <NavLink to="/shifts" title="Shifts">Shifts</NavLink>
+              </NavDropdown>
+              <NavDropdown title="Inventory" icon={<Archive size={20} />}>
+                <NavLink to="/inventory/audit" title="Audits">Audits</NavLink>
+                <NavLink to="/reports/inventory-variance" title="Variance Reports">Variance Reports</NavLink>
+                <NavLink to="/waste-logs" title="Waste Logs">Waste Logs</NavLink>
+              </NavDropdown>
+              <NavDropdown title="Purchasing" icon={<ShoppingCart size={20} />}>
+                <NavLink to="/purchases-and-suppliers" title="Suppliers & POs">Suppliers & POs</NavLink>
+                <NavLink to="/purchases/new" title="Create Purchase Order">New Purchase Order</NavLink>
+              </NavDropdown>
+              <li className='nav-item'>
+                <Link to="/reports" className='nav-link d-flex align-items-center'>
+                    <FileText size={20} /> <span className='ms-2'>Reports</span>
+                </Link>
+              </li>
+              <li className='nav-item'>
+                <Link to="/users" className='nav-link d-flex align-items-center'>
+                    <Users size={20} /> <span className='ms-2'>Users</span>
+                </Link>
+              </li>
+              <NavDropdown title="Settings" icon={<Settings size={20} />}>
+                <NavLink to="/qr-generator" title="QR Generator">QR Generator</NavLink>
+              </NavDropdown>
+            </>
+          );
     }
 
     if (isKitchen) {
-      menuItems.push(
-        <NavLink key="ticket-list" to="/ticket-list" title="Lista de Tickets"><ClipboardList size={20} /></NavLink>,
-        <NavLink key="shifts" to="/shifts" title="Turnos"><Clock size={20} /></NavLink>,
-        <NavLink key="menu" to="/menu-management" title="Menú"><BookText size={20} /></NavLink>,
-        <NavLink key="inventory-audit" to="/inventory/audit" title="Auditoría de Inventario"><ClipboardCheck size={20} /></NavLink>,
-        <NavLink key="kitchen-ticket-create" to="/kitchen-ticket-create" title="Crear Ticket Manual"><PlusSquare size={20} /></NavLink>,
-        <NavLink key="meal-shifts" to="/meal-shifts" title="Producción Diaria"><CookingPot size={20} /></NavLink>,
-        <NavLink key="ticket-monitor" to="/ticket-monitor" title="Monitor de Cocina"><Monitor size={20} /></NavLink>
-      );
+        return (
+            <>
+              <NavDropdown title="Kitchen" icon={<CookingPot size={20} />}>
+                <NavLink to="/ticket-monitor" title="Ticket Monitor">Ticket Monitor</NavLink>
+                <NavLink to="/kitchen-ticket-create" title="Create Ticket">Create Ticket</NavLink>
+                <NavLink to="/meal-shifts" title="Daily Production">Daily Production</NavLink>
+              </NavDropdown>
+              <NavDropdown title="Inventory" icon={<Archive size={20} />}>
+                <NavLink to="/inventory/audit" title="Audits">Audits</NavLink>
+              </NavDropdown>
+              <NavDropdown title="Menu" icon={<BookText size={20} />}>
+                <NavLink to="/menu-management" title="Menu Management">Menu Management</NavLink>
+              </NavDropdown>
+            </>
+          );
     }
 
     if (isEmployee) {
-        menuItems.push(
-          <NavLink key="ticket-validation" to="/ticket-validation" title="Validar Ticket"><ScanLine size={20} /></NavLink>,
-          <NavLink key="active-shift-form" to="/active-shift" title="Pedido de Turno"><CalendarCheck size={20} /></NavLink>
-        );
+        return (
+            <NavDropdown title="Tickets" icon={<Ticket size={20} />}>
+                <NavLink to="/ticket-validation" title="Validate Ticket">Validate Ticket</NavLink>
+                <NavLink to="/active-shift" title="Request Shift">Request Shift</NavLink>
+            </NavDropdown>
+        )
     }
-    
-    // Remove duplicates for users with multiple roles (e.g. admin + kitchen)
-    const uniqueKeys = new Set<string>();
-    return menuItems.filter(item => {
-        if (React.isValidElement(item) && item.key) {
-            const key = String(item.key);
-            if (!uniqueKeys.has(key)) {
-                uniqueKeys.add(key);
-                return true;
-            }
-        }
-        return false;
-    });
+
+    return null
   };
 
   return (
@@ -191,9 +221,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           </button>
 
           <div className={`${isNavCollapsed ? 'collapse' : ''} navbar-collapse`} id="navbarNav">
-            <nav className="navbar-nav d-flex flex-row flex-wrap gap-2 mx-auto">
+            <ul className="navbar-nav mx-auto">
               {renderMenuItems()}
-            </nav>
+            </ul>
 
             <div className="navbar-nav ms-lg-auto d-flex flex-row align-items-center gap-3">
               {/* Notifications */}
