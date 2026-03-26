@@ -30,6 +30,8 @@ const MealShiftManager: React.FC = () => { // No props here
     shiftId: 0,
     menuItemId: 0,
     quantityProduced: 0,
+    lotNumber: '', // New field
+    unitCost: 0,   // New field
   };
 
   const [formData, setFormData] = useState<CreateMealShiftDto>(initialState);
@@ -65,7 +67,7 @@ const MealShiftManager: React.FC = () => { // No props here
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: name === 'date' ? value : Number(value),
+      [name]: (name === 'date' || name === 'lotNumber') ? value : Number(value),
     }));
   };
 
@@ -88,13 +90,34 @@ const MealShiftManager: React.FC = () => { // No props here
 
   const executeSubmit = async () => {
     try {
+      // Find the selected menu item to determine its type
+      const selectedMenuItem = menuItems.find(item => item.id === formData.menuItemId);
+
+      let payload: CreateMealShiftDto = {
+        date: formData.date,
+        shiftId: formData.shiftId,
+        menuItemId: formData.menuItemId,
+        quantityProduced: formData.quantityProduced,
+      };
+
+      if (selectedMenuItem?.type === 'SIMPLE') {
+        payload = {
+          ...payload,
+          lotNumber: formData.lotNumber,
+          unitCost: formData.unitCost,
+        };
+      }
+      // If COMPUESTO, lotNumber and unitCost are not included in the payload
+      // Client-side validation should ensure they are present for SIMPLE items.
+
+
       if (editingId) {
-        await api.patch(`/meal-shifts/${editingId}`, formData);
+        await api.patch(`/meal-shifts/${editingId}`, payload); // Use payload here
         setSuccessMessage('Producción actualizada con éxito');
         setEditingId(null);
         refetch();
       } else {
-        await addMealShift(formData);
+        await addMealShift(payload); // Use payload here
         setSuccessMessage('Producción registrada con éxito');
       }
       setFormData(initialState);
@@ -116,6 +139,8 @@ const MealShiftManager: React.FC = () => { // No props here
       shiftId: mealShift.shiftId,
       menuItemId: mealShift.menuItemId,
       quantityProduced: mealShift.quantityProduced,
+      lotNumber: mealShift.lotNumber || '', // Add lotNumber, default to empty string
+      unitCost: mealShift.unitCost || 0,   // Add unitCost, default to 0
     });
     setShowFormModal(true); // Open form modal for editing
   };

@@ -48,7 +48,7 @@ const MenuManagementPage: React.FC = () => {
         </li>
         <li className="nav-item">
           <button className={`nav-link ${activeTab === 'ingredients' ? 'active' : ''}`} onClick={() => setActiveTab('ingredients')}>
-            Ingredientes
+            Insumos
           </button>
         </li>
       </ul>

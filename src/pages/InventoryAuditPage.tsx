@@ -45,7 +45,7 @@ const InventoryAuditPage: React.FC = () => {
                   setActiveTab('ingredient');
                 }}
               >
-                Ingredientes
+                Insumos
               </a>
             </li>
             <li className="nav-item">

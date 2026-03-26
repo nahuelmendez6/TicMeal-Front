@@ -90,7 +90,7 @@ const StockReport: React.FC = () => {
                 className={`btn ${itemFilter === 'INGREDIENT' ? 'btn-primary' : 'btn-outline-primary'}`}
                 onClick={() => setItemFilter('INGREDIENT')}
               >
-                Ingredientes
+                Insumos
               </button>
             </div>
             <div className="btn-group btn-group-sm" role="group" aria-label="Filtro de tipo de movimiento">
@@ -144,11 +144,9 @@ const StockReport: React.FC = () => {
                   const date = new Date(movement.createdAt).toLocaleString('es-ES');
                   const isOut = movement.movementType.toLowerCase() === 'out';
 
-                  const remainingStock = movement.menuItem
-                    ? movement.menuItem.stock
-                    : movement.ingredient?.quantityInStock;
+                  const remainingStock = movement.stockAfter;
                   
-                  const stockUnit = movement.menuItem ? 'u.' : movement.ingredient?.unit;
+                  const stockUnit = movement.unit; // Use the unit from the movement itself
 
                   return (
                     <tr key={movement.id}>

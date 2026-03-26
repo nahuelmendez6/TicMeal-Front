@@ -61,13 +61,13 @@ const ItemList: React.FC<Props> = ({ items, onEdit, onDelete, onManageStock, ite
     ] : []),
   ];
 
-  const renderRowActions = (item: MenuItemType) => (
+  const renderRowActions = (item: any) => ( // Change type to any as it's a formatted item
     <>
       {item.type === 'SIMPLE' && (
         <Button
           variant="success"
           size="sm"
-          onClick={() => onManageStock(item)}
+          onClick={() => onManageStock(item.originalItem)} // Use originalItem
           title="Gestionar Stock"
           className="me-2"
         >
@@ -77,7 +77,7 @@ const ItemList: React.FC<Props> = ({ items, onEdit, onDelete, onManageStock, ite
       <Button
         variant="primary"
         size="sm"
-        onClick={() => onEdit(item)}
+        onClick={() => onEdit(item.originalItem)} // Use originalItem
         className="me-2"
       >
         <FilePenLine size={18} />
@@ -94,6 +94,7 @@ const ItemList: React.FC<Props> = ({ items, onEdit, onDelete, onManageStock, ite
   );
 
   const formattedItems = items.map(item => ({
+    originalItem: item, // Store the original item here
     ...item,
     name: (
       <div className="d-flex align-items-center">

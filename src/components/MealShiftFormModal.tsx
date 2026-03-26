@@ -41,6 +41,9 @@ const MealShiftFormModal: React.FC<MealShiftFormModalProps> = ({
 }) => {
   if (!show) return null;
 
+  const selectedMenuItem = menuItems.find(item => item.id === formData.menuItemId);
+  const showLotAndCostFields = selectedMenuItem?.type === 'SIMPLE';
+
   return (
     <>
       <div className="modal fade show d-block" tabIndex={-1} style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
@@ -106,6 +109,32 @@ const MealShiftFormModal: React.FC<MealShiftFormModalProps> = ({
                   min="1"
                   required
                 />
+
+                {showLotAndCostFields && (
+                  <>
+                    <Input
+                      label="Número de Lote"
+                      type="text"
+                      id="lotNumber"
+                      name="lotNumber"
+                      value={formData.lotNumber}
+                      onChange={handleInputChange}
+                      required
+                    />
+
+                    <Input
+                      label="Costo Unitario"
+                      type="number"
+                      id="unitCost"
+                      name="unitCost"
+                      value={formData.unitCost || ''}
+                      onChange={handleInputChange}
+                      min="0"
+                      step="0.01"
+                      required
+                    />
+                  </>
+                )}
 
                 <div className="d-flex justify-content-end mt-3">
                   {editingId && (

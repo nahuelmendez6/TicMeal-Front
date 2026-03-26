@@ -49,6 +49,8 @@ export interface CreateMealShiftDto {
   shiftId: number;
   menuItemId: number;
   quantityProduced: number;
+  lotNumber?: string; // Optional for compound items
+  unitCost?: number;   // Optional for compound items
 }
 
 export const mealShiftsService = {

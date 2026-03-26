@@ -142,9 +142,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     if (isAdmin) {
         return (
             <>
-              <NavDropdown title="Restaurant" icon={<Utensils size={20} />}>
-                <NavLink to="/menu-management" title="Menu Management">Menu Management</NavLink>
-                <NavLink to="/shifts" title="Shifts">Shifts</NavLink>
+              <NavDropdown title="Cocina" icon={<Utensils size={20} />}>
+                <NavLink to="/menu-management" title="Menu Management">Gestión de Menú</NavLink>
+                <NavLink to="/shifts" title="Shifts">Turnos</NavLink>
               </NavDropdown>
               <NavDropdown title="Inventory" icon={<Archive size={20} />}>
                 <NavLink to="/inventory/audit" title="Audits">Audits</NavLink>

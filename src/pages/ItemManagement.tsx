@@ -155,7 +155,12 @@ const ItemManagement: React.FC<ItemManagementProps> = ({ itemType }) => {
   };
 
   const handleEditClick = (item: MenuItem) => {
-    setEditingItem(item);
+    // Sanitize the item to prevent cyclic object errors.
+    // Only store what's necessary for the edit/sync logic.
+    setEditingItem({
+      id: item.id,
+      recipeIngredients: item.recipeIngredients,
+    });
     setNewItem({
       name: item.name,
       minStock: item.minStock ?? 0,
