@@ -158,15 +158,7 @@ const ItemForm: React.FC<Props> = ({
         </div>
       </div>
 
-      {/* BOTONES */}
-      <div className="d-flex justify-content-end mt-3">
-        <Button variant="secondary" className="me-2" onClick={onCancel}>
-          Cancelar
-        </Button>
-        <Button type="submit" variant="primary">
-          {editingItem ? "Actualizar" : "Agregar"}
-        </Button>
-      </div>
+
     </form>
   );
 };
