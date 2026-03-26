@@ -3,6 +3,8 @@ import { usePurchaseOrders } from '../hooks/usePurchaseOrders';
 import type { PurchaseOrder } from '../types/purchaseOrder';
 import { Eye, Package } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import Table from './common/Table';
+import Button from './common/Button';
 
 // Componente Skeleton para la tabla
 const TableSkeleton = () => (
@@ -27,27 +29,68 @@ interface PurchasesTableProps {
   onReceive: (order: PurchaseOrder) => void;
 }
 
+const getStatusChip = (status: PurchaseOrder['status']) => {
+  let colorClass = '';
+  switch (status) {
+    case 'PENDING':
+      colorClass = 'bg-warning text-dark';
+      break;
+    case 'COMPLETED':
+      colorClass = 'bg-success';
+      break;
+    case 'CANCELLED':
+      colorClass = 'bg-danger';
+      break;
+    default:
+      colorClass = 'bg-secondary';
+  }
+  return <span className={`badge ${colorClass}`}>{status}</span>;
+};
+
 const PurchasesTable: React.FC<PurchasesTableProps> = ({ onReceive }) => {
   const { purchaseOrders, isLoading, isError, error } = usePurchaseOrders();
   const navigate = useNavigate();
 
-  const getStatusChip = (status: PurchaseOrder['status']) => {
-    let colorClass = '';
-    switch (status) {
-      case 'PENDING':
-        colorClass = 'bg-warning text-dark';
-        break;
-      case 'COMPLETED':
-        colorClass = 'bg-success';
-        break;
-      case 'CANCELLED':
-        colorClass = 'bg-danger';
-        break;
-      default:
-        colorClass = 'bg-secondary';
-    }
-    return <span className={`badge ${colorClass}`}>{status}</span>;
-  };
+  const columns = [
+    { header: 'ID', accessor: 'id' },
+    { header: 'Proveedor', accessor: 'supplierName' },
+    { header: 'Fecha de Orden', accessor: 'orderDate' },
+    { header: 'Estado', accessor: 'status' },
+    { header: 'Items', accessor: 'items' },
+    { header: 'Fecha de Recepción', accessor: 'receivedDate' },
+  ];
+
+  const formattedData = purchaseOrders?.map(order => ({
+    ...order,
+    orderDate: new Date(order.orderDate).toLocaleDateString(),
+    status: getStatusChip(order.status),
+    items: order.items.length,
+    receivedDate: order.receivedDate ? new Date(order.receivedDate).toLocaleDateString() : '-',
+  }));
+
+  const renderRowActions = (order: PurchaseOrder) => (
+    <>
+      <Button
+        variant="info"
+        size="sm"
+        onClick={() => navigate(`/purchases/${order.id}`)}
+        title="Ver Detalles"
+        className="me-2"
+      >
+        <Eye size={16} />
+      </Button>
+      {order.status === 'PENDING' && (
+        <Button
+          variant="success"
+          size="sm"
+          onClick={() => onReceive(order)}
+          title="Recibir Orden"
+        >
+          <Package size={16} />
+        </Button>
+      )}
+    </>
+  );
 
   if (isLoading) {
     return <TableSkeleton />;
@@ -66,51 +109,11 @@ const PurchasesTable: React.FC<PurchasesTableProps> = ({ onReceive }) => {
   }
 
   return (
-    <div className="table-responsive">
-      <table className="table table-hover align-middle">
-        <thead className="table-light">
-          <tr>
-            <th>ID</th>
-            <th>Proveedor</th>
-            <th>Fecha de Orden</th>
-            <th>Estado</th>
-            <th>Items</th>
-            <th>Fecha de Recepción</th>
-            <th className="text-end">Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {purchaseOrders.map((order) => (
-            <tr key={order.id}>
-              <td>{order.id}</td>
-              <td>{order.supplierName}</td>
-              <td>{new Date(order.orderDate).toLocaleDateString()}</td>
-              <td>{getStatusChip(order.status)}</td>
-              <td>{order.items.length}</td>
-              <td>{order.receivedDate ? new Date(order.receivedDate).toLocaleDateString() : '-'}</td>
-              <td className="text-end">
-                <button
-                  className="btn btn-sm btn-outline-info me-2"
-                  onClick={() => navigate(`/purchases/${order.id}`)}
-                  title="Ver Detalles"
-                >
-                  <Eye size={16} />
-                </button>
-                {order.status === 'PENDING' && (
-                  <button
-                    className="btn btn-sm btn-outline-success"
-                    onClick={() => onReceive(order)}
-                    title="Recibir Orden"
-                  >
-                    <Package size={16} />
-                  </button>
-                )}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <Table 
+      columns={columns} 
+      data={formattedData || []} 
+      renderRowActions={renderRowActions} 
+    />
   );
 };
 

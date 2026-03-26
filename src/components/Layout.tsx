@@ -19,6 +19,7 @@ import {
   BookText,
   ShoppingCart
 } from 'lucide-react';
+import Button from './common/Button';
 
 import logonavbar from '../assets/sidebar-logo.png';
 
@@ -203,7 +204,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   return (
     <div className="d-flex flex-column vh-100">
-      <header className="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm sticky-top">
+      <header className="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm sticky-top" style={{ backgroundColor: 'var(--color-dark)' }}>
         <div className="container-fluid">
           <Link to="/" className="navbar-brand d-flex align-items-center">
             <img src={logonavbar} alt="Logo" style={{ height: '40px' }} />
@@ -241,9 +242,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 </button>
                 
                 {showNotifications && (
-                  <div className="dropdown-menu dropdown-menu-end show p-0 shadow border-0 mt-2" style={{ width: '300px', zIndex: 1050 }}>
+                  <div className="dropdown-menu dropdown-menu-end show p-0 shadow-lg border-0 mt-2" style={{ width: '300px', zIndex: 1050, boxShadow: 'var(--shadow-lg)' }}>
                     <div className="card border-0">
-                      <div className="card-header bg-light d-flex justify-content-between align-items-center py-2">
+                      <div className="card-header bg-light d-flex justify-content-between align-items-center py-2" style={{ backgroundColor: 'var(--color-gray-100)'}}>
                         <h6 className="mb-0 small fw-bold">Notificaciones</h6>
                         {notifications.length > 0 && (
                           <button className="btn btn-link btn-sm p-0 text-decoration-none" onClick={() => setNotifications([])}>
@@ -257,7 +258,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                         ) : (
                           notifications.map((notif, idx) => (
                             <div key={idx} className="list-group-item p-2">
-                              <strong className="text-danger small">Stock Bajo</strong>
+                              <strong className="text-danger small" style={{ color: 'var(--color-danger)'}}>Stock Bajo</strong>
                               <p className="mb-1 small">{notif.name}: {notif.currentStock} {notif.unit}</p>
                             </div>
                           ))
@@ -273,21 +274,23 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 <UserCircle size={24} className="me-2" />
                 <div>
                   <div className="fw-bold">{userProfile?.username || 'Usuario'}</div>
-                  {userProfile?.role && <small className="text-muted">{userProfile.role.replace('_', ' ')}</small>}
+                  {userProfile?.role && <small className="text-muted" style={{ color: 'var(--color-gray-400)'}}>{userProfile.role.replace('_', ' ')}</small>}
                 </div>
               </div>
 
               {/* Logout Button */}
-              <button
-                className="btn btn-outline-danger d-flex align-items-center"
+              <Button
+                variant="danger"
+                size="sm"
                 title="Salir"
                 onClick={() => {
                   logout();
                   navigate('/login');
                 }}
+                className="d-flex align-items-center"
               >
                 <LogOut size={18} />
-              </button>
+              </Button>
             </div>
           </div>
         </div>

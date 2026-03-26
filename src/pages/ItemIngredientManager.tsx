@@ -8,6 +8,8 @@ import StockMovementModal from '../components/ingredient/StockMovementModal';
 import DeleteModal from '../components/menu/DeleteModal';
 import type { Ingredient } from '../types/ingtredient';
 import { useAuth } from '../contexts/AuthContext';
+import Card from '../components/common/Card';
+import Button from '../components/common/Button';
 
 const ItemIngredientManager: React.FC = () => {
   const { token } = useAuth();
@@ -106,31 +108,29 @@ const ItemIngredientManager: React.FC = () => {
   };
 
   return (
-    <div className="card">
-      <div className="card-body">
-        <div className="d-flex justify-content-between align-items-center mb-3">
-          <h4 className="card-title">Gestión de Insumos</h4>
-          <button className="btn btn-primary" onClick={() => handleOpenFormModal()}>
-            <Plus size={18} className="me-2" /> Nuevo Insumo
-          </button>
-        </div>
-
-        {error && <div className="alert alert-danger">{error}</div>}
-        {loading ? (
-          <div className="text-center">
-            <div className="spinner-border" role="status">
-              <span className="visually-hidden">Cargando...</span>
-            </div>
-          </div>
-        ) : (
-          <IngredientTable
-            ingredients={ingredients}
-            onEdit={handleOpenFormModal}
-            onDelete={handleOpenDeleteModal}
-            onManageStock={handleOpenStockModal}
-          />
-        )}
+    <Card>
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <h4 className="card-title">Gestión de Insumos</h4>
+        <Button onClick={() => handleOpenFormModal()}>
+          <Plus size={18} className="me-2" /> Nuevo Insumo
+        </Button>
       </div>
+
+      {error && <div className="alert alert-danger">{error}</div>}
+      {loading ? (
+        <div className="text-center">
+          <div className="spinner-border" role="status">
+            <span className="visually-hidden">Cargando...</span>
+          </div>
+        </div>
+      ) : (
+        <IngredientTable
+          ingredients={ingredients}
+          onEdit={handleOpenFormModal}
+          onDelete={handleOpenDeleteModal}
+          onManageStock={handleOpenStockModal}
+        />
+      )}
 
       {isFormModalOpen && (
         <IngredientForm
@@ -161,7 +161,7 @@ const ItemIngredientManager: React.FC = () => {
           loading={false} // You can add loading state for delete if needed
         />
       )}
-    </div>
+    </Card>
   );
 };
 

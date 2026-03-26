@@ -2,6 +2,8 @@
 import React from 'react';
 import { FilePenLine, Trash2, PackagePlus } from 'lucide-react';
 import type { Ingredient } from '../../types/ingtredient';
+import Table from '../common/Table';
+import Button from '../common/Button';
 
 interface IngredientTableProps {
   ingredients: Ingredient[];
@@ -11,55 +13,58 @@ interface IngredientTableProps {
 }
 
 const IngredientTable: React.FC<IngredientTableProps> = ({ ingredients, onEdit, onDelete, onManageStock }) => {
+  const columns = [
+    { header: 'Nombre', accessor: 'name' },
+    { header: 'Unidad', accessor: 'unit' },
+    { header: 'Stock Actual', accessor: 'quantityInStock' },
+    { header: 'Stock Mínimo', accessor: 'minStock' },
+    { header: 'Merma (%)', accessor: 'shrinkagePercentage' },
+  ];
+
+  const renderRowActions = (ingredient: Ingredient) => (
+    <>
+      <Button
+        variant="success"
+        size="sm"
+        onClick={() => onManageStock(ingredient)}
+        title="Gestionar Stock"
+        className="me-2"
+      >
+        <PackagePlus size={18} />
+      </Button>
+      <Button
+        variant="primary"
+        size="sm"
+        onClick={() => onEdit(ingredient)}
+        title="Editar Ingrediente"
+        className="me-2"
+      >
+        <FilePenLine size={18} />
+      </Button>
+      <Button
+        variant="danger"
+        size="sm"
+        onClick={() => onDelete(ingredient.id)}
+        title="Eliminar Ingrediente"
+      >
+        <Trash2 size={18} />
+      </Button>
+    </>
+  );
+
+  const data = ingredients.map(i => ({
+    ...i,
+    quantityInStock: i.quantityInStock ?? 0,
+    minStock: i.minStock ?? 'N/A',
+    shrinkagePercentage: `${i.shrinkagePercentage ?? 0}%`,
+  }));
+
   return (
-    <div className="table-responsive" style={{ maxHeight: '450px', overflowY: 'auto' }}>
-      <table className="table table-hover align-middle">
-        <thead className="table-light">
-          <tr>
-            <th style={{ position: 'sticky', top: 0, zIndex: 1 }}>Nombre</th>
-            <th style={{ position: 'sticky', top: 0, zIndex: 1 }}>Unidad</th>
-            <th style={{ position: 'sticky', top: 0, zIndex: 1 }}>Stock Actual</th>
-            <th style={{ position: 'sticky', top: 0, zIndex: 1 }}>Stock Mínimo</th>
-            <th style={{ position: 'sticky', top: 0, zIndex: 1 }}>Merma (%)</th>
-            <th style={{ position: 'sticky', top: 0, zIndex: 1, textAlign: 'right' }}>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {ingredients.map(ingredient => (
-            <tr key={ingredient.id}>
-              <td>{ingredient.name}</td>
-              <td>{ingredient.unit}</td>
-              <td>{ingredient.quantityInStock ?? 0}</td>
-              <td>{ingredient.minStock ?? 'N/A'}</td>
-              <td>{ingredient.shrinkagePercentage ?? 0}%</td>
-              <td className="text-end">
-                <button
-                  className="btn btn-sm btn-outline-success me-2"
-                  onClick={() => onManageStock(ingredient)}
-                  title="Gestionar Stock"
-                >
-                  <PackagePlus size={18} />
-                </button>
-                <button
-                  className="btn btn-sm btn-outline-primary me-2"
-                  onClick={() => onEdit(ingredient)}
-                  title="Editar Ingrediente"
-                >
-                  <FilePenLine size={18} />
-                </button>
-                <button
-                  className="btn btn-sm btn-outline-danger"
-                  onClick={() => onDelete(ingredient.id)}
-                  title="Eliminar Ingrediente"
-                >
-                  <Trash2 size={18} />
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <Table
+      columns={columns}
+      data={data}
+      renderRowActions={renderRowActions}
+    />
   );
 };
 

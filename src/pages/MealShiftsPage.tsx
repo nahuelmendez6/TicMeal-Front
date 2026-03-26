@@ -1,14 +1,16 @@
 // src/pages/MealShiftsPage.tsx
 
+// src/pages/MealShiftsPage.tsx
+
 import React from 'react';
-import Layout from '../components/Layout';
 import MealShiftManager from '../components/MealShiftManager';
+import PageLayout from '../components/common/PageLayout';
 
 const MealShiftsPage: React.FC = () => {
   return (
-    <Layout>
+    <PageLayout title="Gestión de Turnos de Comida">
       <MealShiftManager />
-    </Layout>
+    </PageLayout>
   );
 };
 

@@ -8,6 +8,9 @@ import StockMovementModal from '../components/ingredient/StockMovementModal';
 import DeleteModal from '../components/menu/DeleteModal';
 import type { Ingredient } from '../types/ingtredient';
 import { useAuth } from '../contexts/AuthContext';
+import PageLayout from '../components/common/PageLayout';
+import Card from '../components/common/Card';
+import Button from '../components/common/Button';
 
 const IngredientManagement: React.FC = () => {
   const { token } = useAuth();
@@ -106,15 +109,13 @@ const IngredientManagement: React.FC = () => {
   };
 
   return (
-    <div className="card">
-      <div className="card-body">
-        <div className="d-flex justify-content-between align-items-center mb-3">
-          <h4 className="card-title">Gestión de Insumos</h4>
-          <button className="btn btn-primary" onClick={() => handleOpenFormModal()}>
-            <Plus size={18} className="me-2" /> Nuevo Insumo
-          </button>
-        </div>
-
+    <PageLayout title="Gestión de Insumos">
+      <div className="d-flex justify-content-end mb-3">
+        <Button onClick={() => handleOpenFormModal()}>
+          <Plus size={18} className="me-2" /> Nuevo Insumo
+        </Button>
+      </div>
+      <Card>
         {error && <div className="alert alert-danger">{error}</div>}
         {loading ? (
           <div className="text-center">
@@ -130,7 +131,7 @@ const IngredientManagement: React.FC = () => {
             onManageStock={handleOpenStockModal}
           />
         )}
-      </div>
+      </Card>
 
       {isFormModalOpen && (
         <IngredientForm
@@ -161,7 +162,7 @@ const IngredientManagement: React.FC = () => {
           loading={false} // You can add loading state for delete if needed
         />
       )}
-    </div>
+    </PageLayout>
   );
 };
 

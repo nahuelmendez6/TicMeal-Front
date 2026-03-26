@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import ItemManagement from './ItemManagement';
 import ItemIngredientManager from './ItemIngredientManager';
 import MealShiftManager from '../components/MealShiftManager';
+import PageLayout from '../components/common/PageLayout';
 
 const MenuManagementPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState('simple');
@@ -33,9 +34,7 @@ const MenuManagementPage: React.FC = () => {
   };
 
   return (
-    <div>
-      <h1 className="mb-4">Gestión de Menú</h1>
-
+    <PageLayout title="Gestión de Menú">
       <ul className="nav nav-underline mb-3">
         <li className="nav-item">
           <button className={`nav-link ${activeTab === 'simple' ? 'active' : ''}`} onClick={() => setActiveTab('simple')}>
@@ -57,7 +56,7 @@ const MenuManagementPage: React.FC = () => {
       <div className="tab-content">
         {renderTabContent()}
       </div>
-    </div>
+    </PageLayout>
   );
 };
 

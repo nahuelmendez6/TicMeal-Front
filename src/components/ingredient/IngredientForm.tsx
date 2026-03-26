@@ -1,6 +1,9 @@
 // src/components/ingredient/IngredientForm.tsx
 import React, { useState, useEffect } from 'react';
 import type { Ingredient } from '../../types/ingtredient';
+import Input from '../common/Input';
+import Select from '../common/Select';
+import Button from '../common/Button';
 
 interface IngredientFormProps {
   editingIngredient: Ingredient | null;
@@ -49,56 +52,44 @@ const IngredientForm: React.FC<IngredientFormProps> = ({ editingIngredient, onSa
               <button type="button" className="btn-close" onClick={onCancel}></button>
             </div>
             <div className="modal-body">
-              <div className="mb-3">
-                <label htmlFor="name" className="form-label">Nombre</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  id="name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="mb-3">
-                <label htmlFor="unit" className="form-label">Unidad</label>
-                <select
-                  className="form-select"
-                  id="unit"
-                  value={unit}
-                  onChange={(e) => setUnit(e.target.value)}
-                  required
-                >
-                  <option value="KILOGRAM">Kilogramo</option>
-                  <option value="LITER">Litro</option>
-                  <option value="UNIT">Unidad</option>
-                </select>
-              </div>
-              <div className="mb-3">
-                <label htmlFor="minStock" className="form-label">Stock Mínimo</label>
-                <input
-                  type="number"
-                  className="form-control"
-                  id="minStock"
-                  value={minStock}
-                  onChange={(e) => setMinStock(e.target.value === '' ? '' : Number(e.target.value))}
-                />
-              </div>
-              <div className="mb-3">
-                <label htmlFor="shrinkagePercentage" className="form-label">Merma (%)</label>
-                <input
-                  type="number"
-                  className="form-control"
-                  id="shrinkagePercentage"
-                  value={shrinkagePercentage}
-                  onChange={(e) => setShrinkagePercentage(e.target.value === '' ? '' : Number(e.target.value))}
-                  placeholder="Ej: 20"
-                />
-              </div>
+              <Input
+                label="Nombre"
+                type="text"
+                id="name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
+              <Select
+                label="Unidad"
+                id="unit"
+                value={unit}
+                onChange={(e) => setUnit(e.target.value)}
+                required
+              >
+                <option value="KILOGRAM">Kilogramo</option>
+                <option value="LITER">Litro</option>
+                <option value="UNIT">Unidad</option>
+              </Select>
+              <Input
+                label="Stock Mínimo"
+                type="number"
+                id="minStock"
+                value={minStock}
+                onChange={(e) => setMinStock(e.target.value === '' ? '' : Number(e.target.value))}
+              />
+              <Input
+                label="Merma (%)"
+                type="number"
+                id="shrinkagePercentage"
+                value={shrinkagePercentage}
+                onChange={(e) => setShrinkagePercentage(e.target.value === '' ? '' : Number(e.target.value))}
+                placeholder="Ej: 20"
+              />
             </div>
             <div className="modal-footer">
-              <button type="button" className="btn btn-secondary" onClick={onCancel}>Cancelar</button>
-              <button type="submit" className="btn btn-primary">Guardar</button>
+              <Button type="button" variant="secondary" onClick={onCancel}>Cancelar</Button>
+              <Button type="submit" variant="primary">Guardar</Button>
             </div>
           </form>
         </div>

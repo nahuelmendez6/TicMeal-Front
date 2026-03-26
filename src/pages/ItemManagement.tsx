@@ -1,7 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import CategoryTabs from '../components/menu/CategoryTabs';
 import ItemForm from '../components/menu/ItemForm';
-import ItemList from '../components/menu/ItemList';
 import RecipeEditor from '../components/menu/RecipeEditor';
 import DeleteModal from '../components/menu/DeleteModal';
 import StockMovementModal from '../components/ingredient/StockMovementModal'; // Importar el nuevo modal
@@ -14,6 +13,9 @@ import type { Ingredient } from '../types/ingtredient';
 import type { RecipeInput, RecipeIngredient } from '../types/recipe';
 import { Plus } from 'lucide-react';
 import type { MenuItem } from '../types/menu';
+import Card from '../components/common/Card';
+import Button from '../components/common/Button';
+import ItemList from '../components/menu/ItemList'; // Moved here to avoid circular dependency
 
 interface ItemManagementProps {
   itemType?: 'SIMPLE' | 'COMPUESTO';
@@ -230,43 +232,41 @@ const ItemManagement: React.FC<ItemManagementProps> = ({ itemType }) => {
 
 
   return (
-    <div className="card">
-      <div className="card-body">
-        {error && <div className="alert alert-danger" role="alert">{error}</div>}
+    <Card>
+      {error && <div className="alert alert-danger" role="alert">{error}</div>}
 
-        <div className="d-flex justify-content-end mb-3">
-          <button className="btn btn-primary" onClick={handleCreateClick}>
-            <Plus size={18} className="me-2" /> {itemType === 'COMPUESTO' ? 'Nuevo Producto Compuesto' : 'Nuevo Producto Simple'}
-          </button>
-        </div>
+      <div className="d-flex justify-content-end mb-3">
+        <Button onClick={handleCreateClick}>
+          <Plus size={18} className="me-2" /> {itemType === 'COMPUESTO' ? 'Nuevo Producto Compuesto' : 'Nuevo Producto Simple'}
+        </Button>
+      </div>
 
-        {/* --- List Section --- */}
-        <div>
-          {/* Category Tabs */}
-          {loading ? (
-            <div className="text-center"><div className="spinner-border spinner-border-sm" role="status"><span className="visually-hidden">Cargando...</span></div></div>
-          ) : (
-            <CategoryTabs
-              categories={categories}
-              items={visibleItems.map(item => ({
-                ...item,
-                category: item.category ?? undefined,
-              })) as any}
-              selectedCategory={selectedCategory}
-              onSelectCategory={setSelectedCategory}
-            />
-          )}
-
-          {/* Items Table */}
-          <ItemList
-            items={filteredItems as any}
+      {/* --- List Section --- */}
+      <div>
+        {/* Category Tabs */}
+        {loading ? (
+          <div className="text-center"><div className="spinner-border spinner-border-sm" role="status"><span className="visually-hidden">Cargando...</span></div></div>
+        ) : (
+          <CategoryTabs
+            categories={categories}
+            items={visibleItems.map(item => ({
+              ...item,
+              category: item.category ?? undefined,
+            })) as any}
             selectedCategory={selectedCategory}
-            onEdit={handleEditClick as any}
-            onDelete={handleDeleteClick}
-            onManageStock={handleManageStockClick}
-            itemType={itemType} // Pass itemType here
+            onSelectCategory={setSelectedCategory}
           />
-        </div>
+        )}
+
+        {/* Items Table */}
+        <ItemList
+          items={filteredItems as any}
+          selectedCategory={selectedCategory}
+          onEdit={handleEditClick as any}
+          onDelete={handleDeleteClick}
+          onManageStock={handleManageStockClick}
+          itemType={itemType} // Pass itemType here
+        />
       </div>
 
       {/* Modal de Creación/Edición */}
@@ -298,6 +298,12 @@ const ItemManagement: React.FC<ItemManagementProps> = ({ itemType }) => {
                   </div>
                 )}
               </div>
+              <div className="modal-footer">
+                <Button variant="secondary" onClick={handleCancelEdit}>Cancelar</Button>
+                <Button type="submit" form="item-form" disabled={isSubmitting}>
+                  {isSubmitting ? 'Guardando...' : 'Guardar'}
+                </Button>
+              </div>
             </div>
           </div>
         </div>
@@ -324,7 +330,7 @@ const ItemManagement: React.FC<ItemManagementProps> = ({ itemType }) => {
         onConfirm={confirmDelete}
         loading={isSubmitting}
       />
-    </div>
+    </Card>
   );
 };
 

@@ -1,5 +1,8 @@
 import React from 'react';
 import { type CreateMealShiftDto } from '../services/mealShiftService';
+import Input from './common/Input';
+import Select from './common/Select';
+import Button from './common/Button';
 
 interface MealShiftFormModalProps {
   show: boolean;
@@ -51,80 +54,68 @@ const MealShiftFormModal: React.FC<MealShiftFormModalProps> = ({
               {formError && <div className="alert alert-warning">{formError}</div>}
               {successMessage && <div className="alert alert-success">{successMessage}</div>}
               <form onSubmit={handleSubmit}>
-                <div className="mb-3">
-                  <label htmlFor="date" className="form-label">Fecha</label>
-                  <input
-                    type="date"
-                    className="form-control"
-                    id="date"
-                    name="date"
-                    value={formData.date}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
+                <Input
+                  label="Fecha"
+                  type="date"
+                  id="date"
+                  name="date"
+                  value={formData.date}
+                  onChange={handleInputChange}
+                  required
+                />
 
-                <div className="mb-3">
-                  <label htmlFor="shiftId" className="form-label">Turno</label>
-                  <select
-                    className="form-select"
-                    id="shiftId"
-                    name="shiftId"
-                    value={formData.shiftId}
-                    onChange={handleInputChange}
-                    required
-                  >
-                    <option value={0}>Seleccione un turno</option>
-                    {shifts.map((shift) => (
-                      <option key={shift.id} value={shift.id}>
-                        {shift.name} ({shift.startTime?.substring(0, 5)} - {shift.endTime?.substring(0, 5)})
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                <Select
+                  label="Turno"
+                  id="shiftId"
+                  name="shiftId"
+                  value={formData.shiftId}
+                  onChange={handleInputChange}
+                  required
+                >
+                  <option value={0}>Seleccione un turno</option>
+                  {shifts.map((shift) => (
+                    <option key={shift.id} value={shift.id}>
+                      {shift.name} ({shift.startTime?.substring(0, 5)} - {shift.endTime?.substring(0, 5)})
+                    </option>
+                  ))}
+                </Select>
 
-                <div className="mb-3">
-                  <label htmlFor="menuItemId" className="form-label">Plato / Ítem</label>
-                  <select
-                    className="form-select"
-                    id="menuItemId"
-                    name="menuItemId"
-                    value={formData.menuItemId}
-                    onChange={handleInputChange}
-                    required
-                  >
-                    <option value={0}>Seleccione un ítem</option>
-                    {menuItems.map((item) => (
-                      <option key={item.id} value={item.id}>
-                        {item.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                <Select
+                  label="Plato / Ítem"
+                  id="menuItemId"
+                  name="menuItemId"
+                  value={formData.menuItemId}
+                  onChange={handleInputChange}
+                  required
+                >
+                  <option value={0}>Seleccione un ítem</option>
+                  {menuItems.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.name}
+                    </option>
+                  ))}
+                </Select>
 
-                <div className="mb-3">
-                  <label htmlFor="quantityProduced" className="form-label">Cantidad Producida</label>
-                  <input
-                    type="number"
-                    className="form-control"
-                    id="quantityProduced"
-                    name="quantityProduced"
-                    value={formData.quantityProduced || ''}
-                    onChange={handleInputChange}
-                    min="1"
-                    required
-                  />
-                </div>
+                <Input
+                  label="Cantidad Producida"
+                  type="number"
+                  id="quantityProduced"
+                  name="quantityProduced"
+                  value={formData.quantityProduced || ''}
+                  onChange={handleInputChange}
+                  min="1"
+                  required
+                />
 
                 <div className="d-flex justify-content-end mt-3">
                   {editingId && (
-                    <button type="button" className="btn btn-secondary me-2" onClick={handleCancelEdit}>
+                    <Button type="button" variant="secondary" className="me-2" onClick={handleCancelEdit}>
                       Cancelar Edición
-                    </button>
+                    </Button>
                   )}
-                  <button type="submit" className={`btn ${editingId ? 'btn-warning' : 'btn-success'}`} disabled={loading}>
+                  <Button type="submit" variant={editingId ? 'warning' : 'success'} disabled={loading}>
                     {loading ? 'Guardando...' : (editingId ? 'Actualizar Producción' : 'Registrar Producción')}
-                  </button>
+                  </Button>
                 </div>
               </form>
             </div>
@@ -145,8 +136,8 @@ const MealShiftFormModal: React.FC<MealShiftFormModalProps> = ({
                 <p>¿Está seguro de que desea guardar los cambios en esta producción?</p>
               </div>
               <div className="modal-footer">
-                <button type="button" className="btn btn-secondary" onClick={() => setShowEditConfirmModal(false)}>Cancelar</button>
-                <button type="button" className="btn btn-primary" onClick={executeSubmit}>Guardar Cambios</button>
+                <Button variant="secondary" onClick={() => setShowEditConfirmModal(false)}>Cancelar</Button>
+                <Button variant="primary" onClick={executeSubmit}>Guardar Cambios</Button>
               </div>
             </div>
           </div>

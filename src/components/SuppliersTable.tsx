@@ -2,6 +2,8 @@ import React from 'react';
 import { useSuppliers } from '../hooks/useSuppliers';
 import type { Supplier } from '../types/supplier';
 import { Edit, Trash2 } from 'lucide-react';
+import Table from './common/Table';
+import Button from './common/Button';
 
 // Componente Skeleton para la tabla
 const TableSkeleton = () => (
@@ -29,6 +31,35 @@ interface SuppliersTableProps {
 const SuppliersTable: React.FC<SuppliersTableProps> = ({ onEdit, onDelete }) => {
   const { suppliers, isLoading, isError, error } = useSuppliers();
 
+  const columns = [
+    { header: 'Nombre', accessor: 'name' },
+    { header: 'Nombre de Contacto', accessor: 'contactName' },
+    { header: 'Teléfono', accessor: 'phone' },
+    { header: 'Email', accessor: 'email' },
+  ];
+
+  const renderRowActions = (supplier: Supplier) => (
+    <>
+      <Button
+        variant="secondary"
+        size="sm"
+        onClick={() => onEdit(supplier)}
+        title="Editar"
+        className="me-2"
+      >
+        <Edit size={16} />
+      </Button>
+      <Button
+        variant="danger"
+        size="sm"
+        onClick={() => onDelete(supplier)}
+        title="Eliminar"
+      >
+        <Trash2 size={16} />
+      </Button>
+    </>
+  );
+
   if (isLoading) {
     return <TableSkeleton />;
   }
@@ -46,45 +77,11 @@ const SuppliersTable: React.FC<SuppliersTableProps> = ({ onEdit, onDelete }) => 
   }
 
   return (
-    <div className="table-responsive">
-      <table className="table table-hover align-middle">
-        <thead className="table-light">
-          <tr>
-            <th>Nombre</th>
-            <th>Nombre de Contacto</th>
-            <th>Teléfono</th>
-            <th>Email</th>
-            <th className="text-end">Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {suppliers.map((supplier) => (
-            <tr key={supplier.id}>
-              <td>{supplier.name}</td>
-              <td>{supplier.contactName || '-'}</td>
-              <td>{supplier.phone || '-'}</td>
-              <td>{supplier.email || '-'}</td>
-              <td className="text-end">
-                <button
-                  className="btn btn-sm btn-outline-secondary me-2"
-                  onClick={() => onEdit(supplier)}
-                  title="Editar"
-                >
-                  <Edit size={16} />
-                </button>
-                <button
-                  className="btn btn-sm btn-outline-danger"
-                  onClick={() => onDelete(supplier)}
-                  title="Eliminar"
-                >
-                  <Trash2 size={16} />
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <Table 
+      columns={columns} 
+      data={suppliers} 
+      renderRowActions={renderRowActions} 
+    />
   );
 };
 

@@ -1,3 +1,6 @@
+import Button from '../components/common/Button';
+import PageLayout from '../components/common/PageLayout';
+import Card from '../components/common/Card';
 import React, { useState } from 'react';
 import SuppliersTable from '../components/SuppliersTable';
 import SupplierForm from '../components/SupplierForm';
@@ -52,9 +55,7 @@ const PurchasesAndSuppliersPage: React.FC = () => {
   };
 
   return (
-    <div className="container-fluid">
-      <h1 className="h3 mb-4 text-gray-800">Gestión de Compras</h1>
-
+    <PageLayout title="Gestión de Compras">
       <ul className="nav nav-tabs mb-4">
         <li className="nav-item">
           <button
@@ -79,16 +80,14 @@ const PurchasesAndSuppliersPage: React.FC = () => {
           <div className="tab-pane fade show active">
             <div className="d-flex justify-content-between align-items-center mb-4">
               <h2 className="h4 mb-0 text-gray-800">Listado de Proveedores</h2>
-              <button className="btn btn-primary d-flex align-items-center" onClick={handleCreateSupplier}>
+              <Button onClick={handleCreateSupplier} className="d-flex align-items-center">
                 <Plus size={20} className="me-2" />
                 Crear Proveedor
-              </button>
+              </Button>
             </div>
-            <div className="card shadow-sm">
-              <div className="card-body">
-                <SuppliersTable onEdit={handleEditSupplier} onDelete={handleDeleteSupplier} />
-              </div>
-            </div>
+            <Card>
+              <SuppliersTable onEdit={handleEditSupplier} onDelete={handleDeleteSupplier} />
+            </Card>
           </div>
         )}
 
@@ -96,19 +95,17 @@ const PurchasesAndSuppliersPage: React.FC = () => {
           <div className="tab-pane fade show active">
             <div className="d-flex justify-content-between align-items-center mb-4">
               <h2 className="h4 mb-0 text-gray-800">Listado de Órdenes de Compra</h2>
-              <button
-                className="btn btn-primary d-flex align-items-center"
-                onClick={() => navigate('/purchases/new')} // Navigate to create page
+              <Button
+                onClick={() => navigate('/purchases/new')}
+                className="d-flex align-items-center"
               >
                 <Plus size={20} className="me-2" />
                 Crear Orden de Compra
-              </button>
+              </Button>
             </div>
-            <div className="card shadow-sm">
-              <div className="card-body">
-                <PurchasesTable onReceive={handleReceivePurchaseOrder} />
-              </div>
-            </div>
+            <Card>
+              <PurchasesTable onReceive={handleReceivePurchaseOrder} />
+            </Card>
           </div>
         )}
       </div>
@@ -133,7 +130,7 @@ const PurchasesAndSuppliersPage: React.FC = () => {
           onClose={handleCloseReceiveOrderDialog}
         />
       )}
-    </div>
+    </PageLayout>
   );
 };
 

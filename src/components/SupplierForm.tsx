@@ -1,9 +1,11 @@
 import React, { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import type { Supplier, CreateSupplierDto, UpdateSupplierDto } from '../types/supplier';
 import { useSuppliers } from '../hooks/useSuppliers';
+import Input from './common/Input';
+import Button from './common/Button';
 
 // Esquema de validación con Zod
 const supplierSchema = z.object({
@@ -24,7 +26,7 @@ const SupplierForm: React.FC<SupplierFormProps> = ({ supplier, onClose }) => {
   const isEditMode = !!supplier;
 
   const {
-    register,
+    control,
     handleSubmit,
     reset,
     formState: { errors },
@@ -79,34 +81,64 @@ const SupplierForm: React.FC<SupplierFormProps> = ({ supplier, onClose }) => {
           </div>
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="modal-body">
-              <div className="mb-3">
-                <label htmlFor="name" className="form-label">Nombre</label>
-                <input {...register('name')} id="name" className={`form-control ${errors.name ? 'is-invalid' : ''}`} />
-                {errors.name && <div className="invalid-feedback">{errors.name.message}</div>}
-              </div>
-              <div className="mb-3">
-                <label htmlFor="contactName" className="form-label">Nombre de Contacto</label>
-                <input {...register('contactName')} id="contactName" className="form-control" />
-              </div>
-              <div className="mb-3">
-                <label htmlFor="phone" className="form-label">Teléfono</label>
-                <input {...register('phone')} id="phone" className="form-control" />
-              </div>
-              <div className="mb-3">
-                <label htmlFor="email" className="form-label">Email</label>
-                <input {...register('email')} id="email" type="email" className={`form-control ${errors.email ? 'is-invalid' : ''}`} />
-                {errors.email && <div className="invalid-feedback">{errors.email.message}</div>}
-              </div>
-              <div className="mb-3">
-                <label htmlFor="address" className="form-label">Dirección</label>
-                <textarea {...register('address')} id="address" className="form-control" rows={3}></textarea>
-              </div>
+              <Controller
+                name="name"
+                control={control}
+                render={({ field }) => (
+                  <Input 
+                    {...field} 
+                    label="Nombre" 
+                    id="name" 
+                    className={errors.name ? 'is-invalid' : ''}
+                  />
+                )}
+              />
+              {errors.name && <div className="invalid-feedback d-block">{errors.name.message}</div>}
+
+              <Controller
+                name="contactName"
+                control={control}
+                render={({ field }) => (
+                  <Input {...field} label="Nombre de Contacto" id="contactName" />
+                )}
+              />
+
+              <Controller
+                name="phone"
+                control={control}
+                render={({ field }) => (
+                  <Input {...field} label="Teléfono" id="phone" />
+                )}
+              />
+              
+              <Controller
+                name="email"
+                control={control}
+                render={({ field }) => (
+                  <Input 
+                    {...field} 
+                    label="Email" 
+                    id="email" 
+                    type="email" 
+                    className={errors.email ? 'is-invalid' : ''}
+                  />
+                )}
+              />
+              {errors.email && <div className="invalid-feedback d-block">{errors.email.message}</div>}
+
+              <Controller
+                name="address"
+                control={control}
+                render={({ field }) => (
+                  <Input {...field} label="Dirección" id="address" />
+                )}
+              />
             </div>
             <div className="modal-footer">
-              <button type="button" className="btn btn-secondary" onClick={onClose} disabled={isLoading}>Cancelar</button>
-              <button type="submit" className="btn btn-primary" disabled={isLoading}>
+              <Button variant="secondary" onClick={onClose} disabled={isLoading}>Cancelar</Button>
+              <Button type="submit" disabled={isLoading}>
                 {isLoading ? 'Guardando...' : 'Guardar'}
-              </button>
+              </Button>
             </div>
           </form>
         </div>

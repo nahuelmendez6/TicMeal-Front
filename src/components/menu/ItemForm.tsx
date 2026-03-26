@@ -6,6 +6,9 @@ import {
   Egg, GlassWater, Milk
 } from "lucide-react";
 import type { LucideProps, LucideIcon } from "lucide-react";
+import Input from "../common/Input";
+import Select from "../common/Select";
+import Button from "../common/Button";
 
 // Mapeo directo de iconos Lucide
 const iconMapList = {
@@ -44,6 +47,7 @@ interface Props {
   recipeIngredients: any[];
   newItemState?: any;
   setNewItemState?: any;
+  onCancel: () => void; // Added onCancel prop
 }
 
 const ItemForm: React.FC<Props> = ({
@@ -53,6 +57,7 @@ const ItemForm: React.FC<Props> = ({
   recipeIngredients,
   newItemState,
   setNewItemState,
+  onCancel, // Destructure onCancel
 }) => {
   const newItem = newItemState!;
   const setNewItem = setNewItemState!;
@@ -75,111 +80,94 @@ const ItemForm: React.FC<Props> = ({
   };
 
   return (
-    <div className="p-3 mb-4 border rounded">
-      <form onSubmit={submit}>
-        <div className="row g-3">
+    <form onSubmit={submit} id="item-form">
+      <div className="row g-3">
 
-          {/* IZQUIERDA */}
-          <div className="col-md-6">
-            <div className="mb-3">
-              <label className="form-label">Nombre</label>
-              <input
-                type="text"
-                name="name"
-                className="form-control"
-                value={newItem.name}
+        {/* IZQUIERDA */}
+        <div className="col-md-6">
+          <Input
+            label="Nombre"
+            type="text"
+            name="name"
+            value={newItem.name}
+            onChange={handleChange}
+            required
+          />
+
+          <div className="row">
+            <div className="col-sm-6">
+              <Input
+                label="Stock Mínimo"
+                type="number"
+                name="minStock"
+                value={newItem.minStock}
                 onChange={handleChange}
-                required
               />
             </div>
 
-            <div className="row">
-              <div className="col-sm-6 mb-3">
-                <label className="form-label">Stock Mínimo</label>
-                <input
-                  type="number"
-                  name="minStock"
-                  className="form-control"
-                  value={newItem.minStock}
-                  onChange={handleChange}
-                />
-              </div>
-
-              <div className="col-sm-6 mb-3">
-                <label className="form-label">Max. Orden</label>
-                <input
-                  type="number"
-                  name="maxOrder"
-                  className="form-control"
-                  value={newItem.maxOrder}
-                  onChange={handleChange}
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* DERECHA */}
-          <div className="col-md-6">
-            <div className="mb-3">
-              <label className="form-label">Categoría</label>
-              <select
-                name="categoryId"
-                className="form-select"
-                value={newItem.categoryId}
+            <div className="col-sm-6">
+              <Input
+                label="Max. Orden"
+                type="number"
+                name="maxOrder"
+                value={newItem.maxOrder}
                 onChange={handleChange}
-              >
-                {categories.map((cat) => (
-                  <option key={cat.id} value={cat.id}>
-                    {cat.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="row">
-              <div className="col-sm-12 mb-3">
-                <label className="form-label">Ícono</label>
-                <div className="input-group">
-                  <span className="input-group-text">
-                    <IconComponent iconName={newItem.iconName} />
-                  </span>
-
-                  <select
-                    name="iconName"
-                    className="form-select"
-                    value={newItem.iconName}
-                    onChange={handleChange}
-                  >
-                    {Object.keys(iconMapList).map((iconName) => (
-                      <option key={iconName} value={iconName}>
-                        {iconName}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
+              />
             </div>
           </div>
         </div>
 
-        {/* BOTONES */}
-        <div className="d-flex justify-content-end mt-3">
-          {editingItem && (
-            <button
-              type="button"
-              className="btn btn-secondary me-2"
-              onClick={() => window.location.reload()}
-            >
-              Cancelar
-            </button>
-          )}
+        {/* DERECHA */}
+        <div className="col-md-6">
+          <Select
+            label="Categoría"
+            name="categoryId"
+            value={newItem.categoryId}
+            onChange={handleChange}
+          >
+            {categories.map((cat: any) => (
+              <option key={cat.id} value={cat.id}>
+                {cat.name}
+              </option>
+            ))}
+          </Select>
 
-          <button type="submit" className="btn btn-primary">
-            {editingItem ? "Actualizar" : "Agregar"}
-          </button>
+          <div className="row">
+            <div className="col-sm-12">
+              <label className="form-label">Ícono</label>
+              <div className="input-group mb-3">
+                <span className="input-group-text">
+                  <IconComponent iconName={newItem.iconName} />
+                </span>
+
+                <select
+                  name="iconName"
+                  className="form-select"
+                  value={newItem.iconName}
+                  onChange={handleChange}
+                >
+                  {Object.keys(iconMapList).map((iconName) => (
+                    <option key={iconName} value={iconName}>
+                      {iconName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </div>
         </div>
-      </form>
-    </div>
+      </div>
+
+      {/* BOTONES */}
+      <div className="d-flex justify-content-end mt-3">
+        <Button variant="secondary" className="me-2" onClick={onCancel}>
+          Cancelar
+        </Button>
+        <Button type="submit" variant="primary">
+          {editingItem ? "Actualizar" : "Agregar"}
+        </Button>
+      </div>
+    </form>
   );
 };
 

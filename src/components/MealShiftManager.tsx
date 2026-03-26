@@ -8,6 +8,9 @@ import { menuItemsService } from '../services/menu.items.service';
 import api from '../services/api';
 import { Plus, ChevronLeft, ChevronRight, Pencil, Trash2 } from 'lucide-react'; // Import Lucide icons
 import MealShiftFormModal from './MealShiftFormModal'; // Import the new modal component
+import Card from './common/Card';
+import Button from './common/Button';
+import Table from './common/Table';
 
 const getLocalDate = () => {
   const today = new Date();
@@ -157,14 +160,60 @@ const MealShiftManager: React.FC = () => { // No props here
     setShowFormModal(true);
   };
 
+  const columns = [
+    { header: 'Fecha', accessor: 'date' },
+    { header: 'Turno', accessor: 'shiftName' },
+    { header: 'Plato', accessor: 'menuItemName' },
+    { header: 'Producido', accessor: 'quantityProduced' },
+    { header: 'Disponible', accessor: 'quantityAvailable' },
+  ];
+
+  const renderRowActions = (ms: any) => (
+    <>
+      <Button variant="primary" size="sm" onClick={() => handleEdit(ms)} title="Editar" className="me-2">
+        <Pencil size={16} />
+      </Button>
+      <Button variant="danger" size="sm" onClick={() => handleDeleteClick(ms.id)} title="Eliminar">
+        <Trash2 size={16} />
+      </Button>
+    </>
+  );
+
+  const filteredMealShifts = mealShifts.filter((ms: any) => ms.isActive !== false && ms.date === filterDate).map((ms: any) => {
+    const shiftName = ms.shift?.name || shifts.find(s => s.id === ms.shiftId)?.name || `ID: ${ms.shiftId}`;
+    const menuItem = ms.menuItem || menuItems.find(i => i.id === ms.menuItemId);
+    const menuItemName = menuItem?.name || `ID: ${ms.menuItemId}`;
+    const iconName = menuItem?.iconName || 'circle';
+
+    return {
+      ...ms,
+      shiftName: (
+        <span className="badge bg-info text-dark bg-opacity-10 border border-info border-opacity-25">
+          {shiftName}
+        </span>
+      ),
+      menuItemName: (
+        <div className="d-flex align-items-center">
+          {/* <i className={`bi bi-${iconName.toLowerCase()} me-2 text-secondary`}></i> */}
+          {menuItemName}
+        </div>
+      ),
+      quantityAvailable: (
+        <span className={`badge ${ms.quantityAvailable > 0 ? 'bg-success' : 'bg-danger'}`}>
+          {ms.quantityAvailable}
+        </span>
+      ),
+    };
+  });
+
   return (
-    <div className="container-fluid">
+    <div>
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h2 className="mb-0">Gestión de Producción Diaria</h2>
-        <button className="btn btn-primary d-flex align-items-center" onClick={openCreateModal}>
+        <Button onClick={openCreateModal}>
           <Plus size={20} className="me-2" />
           Nueva Producción
-        </button>
+        </Button>
       </div>
 
       {/* Mensajes de Error Globales */}
@@ -174,13 +223,13 @@ const MealShiftManager: React.FC = () => { // No props here
       <div className="row">
         {/* Tabla de Listado */}
         <div className="col-12"> {/* Changed to col-12 to take full width */}
-          <div className="card shadow-sm">
-            <div className="card-header bg-white d-flex justify-content-between align-items-center">
+          <Card>
+            <div className="card-header d-flex justify-content-between align-items-center bg-white p-3">
               <h5 className="mb-0 h6">Historial de Producción</h5>
               <div className="d-flex align-items-center">
-                <button type="button" className="btn btn-sm btn-outline-secondary" onClick={() => changeDate(-1)} title="Día anterior">
+                <Button variant="outline-secondary" size="sm" onClick={() => changeDate(-1)} title="Día anterior" className="me-2">
                   <ChevronLeft size={16} />
-                </button>
+                </Button>
                 <input
                   type="date"
                   className="form-control form-control-sm mx-2"
@@ -188,77 +237,25 @@ const MealShiftManager: React.FC = () => { // No props here
                   value={filterDate}
                   onChange={(e) => setFilterDate(e.target.value)}
                 />
-                <button type="button" className="btn btn-sm btn-outline-secondary" onClick={() => changeDate(1)} title="Día siguiente">
+                <Button variant="outline-secondary" size="sm" onClick={() => changeDate(1)} title="Día siguiente">
                   <ChevronRight size={16} />
-                </button>
+                </Button>
               </div>
             </div>
             <div className="card-body p-0">
-              <div className="table-responsive">
-                <table className="table table-hover table-striped mb-0">
-                  <thead className="table-light">
-                    <tr>
-                      <th>Fecha</th>
-                      <th>Turno</th>
-                      <th>Plato</th>
-                      <th className="text-center">Producido</th>
-                      <th className="text-center">Disponible</th>
-                      <th className="text-end">Acciones</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {loading && mealShifts.length === 0 ? (
-                      <tr>
-                        <td colSpan={6} className="text-center p-4">Cargando datos...</td>
-                      </tr>
-                    ) : mealShifts.filter((ms: any) => ms.isActive !== false && ms.date === filterDate).length === 0 ? (
-                      <tr>
-                        <td colSpan={6} className="text-center p-4 text-muted">No hay producciones registradas para esta fecha.</td>
-                      </tr>
-                    ) : (
-                      mealShifts.filter((ms: any) => ms.isActive !== false && ms.date === filterDate).map((ms: any) => {
-                        const shiftName = ms.shift?.name || shifts.find(s => s.id === ms.shiftId)?.name || `ID: ${ms.shiftId}`;
-                        const menuItem = ms.menuItem || menuItems.find(i => i.id === ms.menuItemId);
-                        const menuItemName = menuItem?.name || `ID: ${ms.menuItemId}`;
-                        const iconName = menuItem?.iconName || 'circle';
-
-                        return (
-                          <tr key={ms.id}>
-                            <td>{ms.date}</td>
-                            <td>
-                              <span className="badge bg-info text-dark bg-opacity-10 border border-info border-opacity-25">
-                                {shiftName}
-                              </span>
-                            </td>
-                            <td>
-                              <div className="d-flex align-items-center">
-                                <i className={`bi bi-${iconName.toLowerCase()} me-2 text-secondary`}></i>
-                                {menuItemName}
-                              </div>
-                            </td>
-                            <td className="text-center fw-bold">{ms.quantityProduced}</td>
-                            <td className="text-center">
-                              <span className={`badge ${ms.quantityAvailable > 0 ? 'bg-success' : 'bg-danger'}`}>
-                                {ms.quantityAvailable}
-                              </span>
-                            </td>
-                            <td className="text-end">
-                              <button className="btn btn-sm btn-outline-primary me-2" onClick={() => handleEdit(ms)} title="Editar">
-                                <Pencil size={16} />
-                              </button>
-                              <button className="btn btn-sm btn-outline-danger" onClick={() => handleDeleteClick(ms.id)} title="Eliminar">
-                                <Trash2 size={16} />
-                              </button>
-                            </td>
-                          </tr>
-                        );
-                      })
-                    )}
-                  </tbody>
-                </table>
-              </div>
+              {loading && filteredMealShifts.length === 0 ? (
+                <div className="text-center p-4">Cargando datos...</div>
+              ) : filteredMealShifts.length === 0 ? (
+                <div className="text-center p-4 text-muted">No hay producciones registradas para esta fecha.</div>
+              ) : (
+                <Table
+                  columns={columns}
+                  data={filteredMealShifts}
+                  renderRowActions={renderRowActions}
+                />
+              )}
             </div>
-          </div>
+          </Card>
         </div>
       </div>
 
@@ -275,8 +272,8 @@ const MealShiftManager: React.FC = () => { // No props here
                 <p>¿Está seguro de que desea eliminar este registro de producción? Esta acción descontará el stock disponible.</p>
               </div>
               <div className="modal-footer">
-                <button type="button" className="btn btn-secondary" onClick={() => setShowDeleteModal(false)}>Cancelar</button>
-                <button type="button" className="btn btn-danger" onClick={confirmDelete}>Eliminar</button>
+                <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>Cancelar</Button>
+                <Button variant="danger" onClick={confirmDelete}>Eliminar</Button>
               </div>
             </div>
           </div>

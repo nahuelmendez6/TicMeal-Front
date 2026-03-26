@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import logo from '../assets/logo.png'; // Placeholder, replace with actual logo
+import Card from '../components/common/Card';
+import Input from '../components/common/Input';
+import Button from '../components/common/Button';
 
 const Register: React.FC = () => {
   const [companyName, setCompanyName] = useState('');
@@ -59,7 +62,7 @@ const Register: React.FC = () => {
         {/* Left Column - Registration Form */}
         <div className="col-12 col-lg-6 d-flex align-items-center justify-content-center auth-left-column">
           <div className="w-100 px-3 px-md-5" style={{ maxWidth: '450px' }}>
-            <div className="card shadow-sm border-0">
+            <Card className="shadow-sm border-0">
               <div className="card-body p-4 p-md-5">
                 <img
                   src={logo}
@@ -76,61 +79,49 @@ const Register: React.FC = () => {
                 </div>
 
                 <form onSubmit={handleSubmit} className="needs-validation" noValidate>
-                  <div className="mb-3">
-                    <label htmlFor="companyName" className="form-label fw-semibold">Nombre de la Empresa *</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="companyName"
-                      value={companyName}
-                      onChange={(e) => setCompanyName(e.target.value)}
-                      placeholder="Ej: ACME"
-                      required
-                    />
-                  </div>
+                  <Input
+                    label="Nombre de la Empresa *"
+                    type="text"
+                    id="companyName"
+                    value={companyName}
+                    onChange={(e) => setCompanyName(e.target.value)}
+                    placeholder="Ej: ACME"
+                    required
+                  />
 
-                  <div className="mb-3">
-                    <label htmlFor="adminEmail" className="form-label fw-semibold">Email *</label>
-                    <input
-                      type="email"
-                      className="form-control"
-                      id="adminEmail"
-                      value={adminEmail}
-                      onChange={(e) => setAdminEmail(e.target.value)}
-                      placeholder="admin@empresa.com"
-                      required
-                    />
-                  </div>
+                  <Input
+                    label="Email *"
+                    type="email"
+                    id="adminEmail"
+                    value={adminEmail}
+                    onChange={(e) => setAdminEmail(e.target.value)}
+                    placeholder="admin@empresa.com"
+                    required
+                  />
 
-                  <div className="mb-3">
-                    <label htmlFor="adminPassword" className="form-label fw-semibold">Contraseña *</label>
-                    <input
-                      type="password"
-                      className="form-control"
-                      id="adminPassword"
-                      value={adminPassword}
-                      onChange={(e) => setAdminPassword(e.target.value)}
-                      placeholder="Mínimo 8 caracteres"
-                      required
-                    />
-                  </div>
+                  <Input
+                    label="Contraseña *"
+                    type="password"
+                    id="adminPassword"
+                    value={adminPassword}
+                    onChange={(e) => setAdminPassword(e.target.value)}
+                    placeholder="Mínimo 8 caracteres"
+                    required
+                  />
 
-                  <div className="mb-3">
-                    <label htmlFor="confirmPassword" className="form-label fw-semibold">Confirmar Contraseña *</label>
-                    <input
-                      type="password"
-                      className="form-control"
-                      id="confirmPassword"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      placeholder="Confirme su contraseña"
-                      required
-                    />
-                  </div>
+                  <Input
+                    label="Confirmar Contraseña *"
+                    type="password"
+                    id="confirmPassword"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Confirme su contraseña"
+                    required
+                  />
 
-                  <button type="submit" className="btn btn-primary w-100 mb-3">
+                  <Button type="submit" className="w-100 mb-3">
                     <i className="bi bi-person-plus me-2"></i>Registrar Empresa
-                  </button>
+                  </Button>
                 </form>
 
                 {error && (
@@ -156,7 +147,7 @@ const Register: React.FC = () => {
                   </p>
                 </div>
               </div>
-            </div>
+            </Card>
           </div>
         </div>
 
@@ -164,7 +155,7 @@ const Register: React.FC = () => {
         <div className="col-12 col-lg-6 d-flex align-items-center justify-content-center auth-right-column">
           <div className="w-100 px-3 px-md-5 py-5" style={{ maxWidth: '500px' }}>
             <div className="text-center text-lg-start">
-              <h2 className="fw-bold mb-3" style={{ color: '#FF6B35', fontSize: '2rem' }}>
+              <h2 className="fw-bold mb-3" style={{ color: 'var(--color-primary)', fontSize: '2rem' }}>
                 ¡Únete a TicMeal hoy!
               </h2>
               <p className="text-dark mb-4 fs-5">
@@ -173,21 +164,21 @@ const Register: React.FC = () => {
               
               <ul className="list-unstyled mb-4">
                 <li className="mb-3 d-flex align-items-start">
-                  <i className="bi bi-check-circle-fill text-success me-3" style={{ fontSize: '1.5rem' }}></i>
+                  <i className="bi bi-check-circle-fill" style={{ color: 'var(--color-success)', fontSize: '1.5rem', marginRight: 'var(--space-3)' }}></i>
                   <span className="text-dark">Registro rápido y sencillo. Empiece en minutos.</span>
                 </li>
                 <li className="mb-3 d-flex align-items-start">
-                  <i className="bi bi-check-circle-fill text-success me-3" style={{ fontSize: '1.5rem' }}></i>
+                  <i className="bi bi-check-circle-fill" style={{ color: 'var(--color-success)', fontSize: '1.5rem', marginRight: 'var(--space-3)' }}></i>
                   <span className="text-dark">Gestione usuarios, turnos y menús desde el primer día.</span>
                 </li>
                 <li className="mb-3 d-flex align-items-start">
-                  <i className="bi bi-check-circle-fill text-success me-3" style={{ fontSize: '1.5rem' }}></i>
+                  <i className="bi bi-check-circle-fill" style={{ color: 'var(--color-success)', fontSize: '1.5rem', marginRight: 'var(--space-3)' }}></i>
                   <span className="text-dark">Soporte dedicado para ayudarle a comenzar.</span>
                 </li>
               </ul>
 
               <div className="d-flex align-items-center justify-content-center justify-content-lg-start">
-                <i className="bi bi-shield-check-fill me-2" style={{ fontSize: '1.2rem', color: '#FF6B35' }}></i>
+                <i className="bi bi-shield-check-fill me-2" style={{ fontSize: '1.2rem', color: 'var(--color-primary)' }}></i>
                 <span className="text-muted">Plataforma segura y confiable</span>
               </div>
             </div>

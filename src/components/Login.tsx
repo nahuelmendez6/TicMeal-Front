@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import Card from './common/Card';
+import Input from './common/Input';
+import Button from './common/Button';
 
 import logo from '../assets/logo.png';
 import loginImg from '../assets/login-img.png';
@@ -38,7 +41,7 @@ const Login: React.FC<LoginProps> = ({ showRegisterLink = true }) => {
         {/* Left Column - Login Form */}
         <div className="col-12 col-lg-6 d-flex align-items-center justify-content-center auth-left-column">
           <div className="w-100 px-3 px-md-5" style={{ maxWidth: '450px' }}>
-            <div className="card shadow-sm border-0">
+            <Card className="shadow-sm border-0">
               <div className="card-body p-4 p-md-5">
                 <img
                   src={logo}
@@ -48,33 +51,27 @@ const Login: React.FC<LoginProps> = ({ showRegisterLink = true }) => {
                 />
                 
                 <form onSubmit={handleSubmit} className="needs-validation" noValidate>
-                  <div className="mb-3">
-                    <label htmlFor="username" className="form-label fw-semibold">Usuario</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      id="username"
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                      placeholder="Ingrese su usuario"
-                      required
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label htmlFor="password" className="form-label fw-semibold">Contraseña</label>
-                    <input
-                      type="password"
-                      className="form-control"
-                      id="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Ingrese su contraseña"
-                      required
-                    />
-                  </div>
-                  <button type="submit" className="btn btn-primary w-100 mb-3">
+                  <Input
+                    label="Usuario"
+                    type="text"
+                    id="username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="Ingrese su usuario"
+                    required
+                  />
+                  <Input
+                    label="Contraseña"
+                    type="password"
+                    id="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Ingrese su contraseña"
+                    required
+                  />
+                  <Button type="submit" className="w-100 mb-3">
                     <i className="bi bi-box-arrow-in-right me-2"></i>Iniciar Sesión
-                  </button>
+                  </Button>
                 </form>
 
                 {error && (
@@ -103,7 +100,7 @@ const Login: React.FC<LoginProps> = ({ showRegisterLink = true }) => {
                   </>
                 )}
               </div>
-            </div>
+            </Card>
           </div>
         </div>
 
@@ -111,7 +108,7 @@ const Login: React.FC<LoginProps> = ({ showRegisterLink = true }) => {
         <div className="col-12 col-lg-6 d-flex align-items-center justify-content-center auth-right-column">
           <div className="w-100 px-3 px-md-5 pt-0 pb-5" style={{ maxWidth: '500px' }}>
             <div className="text-center text-lg-start">
-              {/* <h2 className="fw-bold mb-3" style={{ color: '#FF6B35', fontSize: '2rem' }}>
+              {/* <h2 className="fw-bold mb-3" style={{ color: 'var(--color-primary)', fontSize: '2rem' }}>
                 ¡Gestiona tu comedor de manera eficiente!
               </h2> */}
               {/* <p className="text-dark mb-4 fs-5">
@@ -123,27 +120,27 @@ const Login: React.FC<LoginProps> = ({ showRegisterLink = true }) => {
                 className="img-fluid d-block mx-auto mx-lg-0 mb-2"
                 style={{ maxWidth: '350px' }}
               />
-              <h3 className="fw-bold mb-3" style={{ color: '#FF6B35', fontSize: '2rem' }}>
+              <h3 className="fw-bold mb-3" style={{ color: 'var(--color-primary)', fontSize: '2rem' }}>
                 ¡Gestiona tu comedor de manera eficiente!
               </h3>
               
               <ul className="list-unstyled mb-4">
                 <li className="mb-3 d-flex align-items-start">
-                  <i className="bi bi-check-circle-fill text-success me-3" style={{ fontSize: '1.5rem' }}></i>
+                  <i className="bi bi-check-circle-fill" style={{ color: 'var(--color-success)', fontSize: '1.5rem', marginRight: 'var(--space-3)' }}></i>
                   <span className="text-dark">Gestiona todos tus turnos y tickets desde un solo lugar.</span>
                 </li>
                 <li className="mb-3 d-flex align-items-start">
-                  <i className="bi bi-check-circle-fill text-success me-3" style={{ fontSize: '1.5rem' }}></i>
+                  <i className="bi bi-check-circle-fill" style={{ color: 'var(--color-success)', fontSize: '1.5rem', marginRight: 'var(--space-3)' }}></i>
                   <span className="text-dark">Control total sobre el menú y disponibilidad de platos.</span>
                 </li>
                 <li className="mb-3 d-flex align-items-start">
-                  <i className="bi bi-check-circle-fill text-success me-3" style={{ fontSize: '1.5rem' }}></i>
+                  <i className="bi bi-check-circle-fill" style={{ color: 'var(--color-success)', fontSize: '1.5rem', marginRight: 'var(--space-3)' }}></i>
                   <span className="text-dark">Reportes y estadísticas en tiempo real.</span>
                 </li>
               </ul>
 
               {/* <div className="d-flex align-items-center justify-content-center justify-content-lg-start">
-                <i className="bi bi-share-fill me-2" style={{ fontSize: '1.2rem', color: '#FF6B35' }}></i>
+                <i className="bi bi-share-fill me-2" style={{ fontSize: '1.2rem', color: 'var(--color-primary)' }}></i>
                 <span className="text-muted">Accede desde cualquier dispositivo</span>
               </div> */}
             </div>

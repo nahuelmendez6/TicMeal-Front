@@ -1,0 +1,169 @@
+:root {
+  /*
+   * =================================================================
+   * COLOR SYSTEM
+   * =================================================================
+   * We use a simple, modern color palette.
+   */
+
+  /* Brand Colors */
+  --color-primary: #007bff;
+  --color-primary-dark: #0056b3;
+  --color-primary-light: #66b2ff;
+
+  --color-secondary: #6c757d;
+  --color-secondary-dark: #5a6268;
+  --color-secondary-light: #a1a8af;
+
+  /* Neutrals */
+  --color-dark: #212529;
+  --color-light: #f8f9fa;
+  --color-white: #ffffff;
+  
+  /* Grays */
+  --color-gray-100: #f8f9fa;
+  --color-gray-200: #e9ecef;
+  --color-gray-300: #dee2e6;
+  --color-gray-400: #ced4da;
+  --color-gray-500: #adb5bd;
+  --color-gray-600: #6c757d;
+  --color-gray-700: #495057;
+  --color-gray-800: #343a40;
+  --color-gray-900: #212529;
+  
+  /* Semantic Colors */
+  --color-success: #28a745;
+  --color-danger: #dc3545;
+  --color-warning: #ffc107;
+  --color-info: #17a2b8;
+
+  /*
+   * =================================================================
+   * TYPOGRAPHY
+   * =================================================================
+   */
+  --font-family-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+
+  /* Font Sizes */
+  --font-size-base: 1rem; /* 16px */
+  --font-size-sm: 0.875rem; /* 14px */
+  --font-size-lg: 1.25rem; /* 20px */
+
+  /* Heading sizes */
+  --h1-font-size: 2.5rem; /* 40px */
+  --h2-font-size: 2rem; /* 32px */
+  --h3-font-size: 1.75rem; /* 28px */
+  --h4-font-size: 1.5rem; /* 24px */
+  --h5-font-size: 1.25rem; /* 20px */
+  --h6-font-size: 1rem; /* 16px */
+
+  /*
+   * =================================================================
+   * SPACING
+   * =================================================================
+   * A consistent spacing scale.
+   */
+  --space-1: 0.25rem; /* 4px */
+  --space-2: 0.5rem;  /* 8px */
+  --space-3: 1rem;    /* 16px */
+  --space-4: 1.5rem;  /* 24px */
+  --space-5: 3rem;    /* 48px */
+  
+  /*
+   * =================================================================
+   * BORDERS & SHADOWS
+   * =================================================================
+   */
+  --border-radius-sm: 0.2rem;
+  --border-radius: 0.25rem;
+  --border-radius-lg: 0.3rem;
+  --border-radius-xl: 0.5rem;
+  --border-radius-pill: 50rem;
+
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+}
+
+body {
+    font-family: var(--font-family-sans);
+    background-color: var(--color-gray-100);
+    color: var(--color-dark);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-family-sans);
+    font-weight: 600;
+}
+
+h1 { font-size: var(--h1-font-size); }
+h2 { font-size: var(--h2-font-size); }
+h3 { font-size: var(--h3-font-size); }
+h4 { font-size: var(--h4-font-size); }
+h5 { font-size: var(--h5-font-size); }
+h6 { font-size: var(--h6-font-size); }
+
+.card {
+  border-radius: var(--border-radius-xl);
+  border: 1px solid var(--color-gray-200);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.form-control, .form-select {
+  border-radius: var(--border-radius);
+  border: 1px solid var(--color-gray-300);
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-base);
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 0.2rem rgba(var(--color-primary), 0.25);
+}
+
+.table {
+  font-size: var(--font-size-sm);
+}
+
+.table thead th {
+  background-color: var(--color-gray-100);
+  font-weight: 600;
+  border-bottom: 2px solid var(--color-gray-300);
+}
+
+.table tbody tr:nth-of-type(odd) {
+  background-color: var(--color-gray-100);
+}
+
+.btn {
+  border-radius: var(--border-radius);
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-primary {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.btn-primary:hover {
+  background-color: var(--color-primary-dark);
+  border-color: var(--color-primary-dark);
+}
+
+.page-header {
+  margin-bottom: var(--space-4);
+}
+
+.page-title {
+  font-size: var(--h2-font-size);
+  font-weight: 700;
+  color: var(--color-dark);
+}

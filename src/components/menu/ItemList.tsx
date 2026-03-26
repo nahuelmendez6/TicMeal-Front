@@ -7,6 +7,8 @@ import {
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import type { MenuItem as MenuItemType } from '../../types/menu';
+import Table from '../common/Table';
+import Button from '../common/Button';
 
 // ----------------------------------------------------------------------
 // ICON MAP DIRECTO
@@ -50,68 +52,66 @@ interface Props {
 }
 
 const ItemList: React.FC<Props> = ({ items, onEdit, onDelete, onManageStock, itemType }) => {
+  const columns = [
+    { header: 'Nombre', accessor: 'name' },
+    ...(itemType !== 'COMPUESTO' ? [
+      { header: 'Stock Actual', accessor: 'quantityInStock' },
+      { header: 'Mínimo', accessor: 'minStock' },
+      { header: 'Max Orden', accessor: 'maxOrder' },
+    ] : []),
+  ];
+
+  const renderRowActions = (item: MenuItemType) => (
+    <>
+      {item.type === 'SIMPLE' && (
+        <Button
+          variant="success"
+          size="sm"
+          onClick={() => onManageStock(item)}
+          title="Gestionar Stock"
+          className="me-2"
+        >
+          <PackagePlus size={18} />
+        </Button>
+      )}
+      <Button
+        variant="primary"
+        size="sm"
+        onClick={() => onEdit(item)}
+        className="me-2"
+      >
+        <FilePenLine size={18} />
+      </Button>
+
+      <Button
+        variant="danger"
+        size="sm"
+        onClick={() => onDelete(item.id)}
+      >
+        <Trash2 size={18} />
+      </Button>
+    </>
+  );
+
+  const formattedItems = items.map(item => ({
+    ...item,
+    name: (
+      <div className="d-flex align-items-center">
+        <IconComponent iconName={item.iconName as IconName} size={18} />
+        <span className="ms-2">{item.name}</span>
+      </div>
+    ),
+    quantityInStock: item.quantityInStock ?? "—",
+    minStock: item.minStock || "—",
+    maxOrder: item.maxOrder || "—",
+  }));
+
   return (
-    <div className="table-responsive" style={{ maxHeight: '350px', overflowY: 'auto' }}>
-      <table className="table table-hover align-middle">
-        <thead className="table-light">
-          <tr>
-            <th style={{ position: 'sticky', top: 0, zIndex: 1 }}>Nombre</th>
-            {itemType !== 'COMPUESTO' && (
-              <>
-                <th style={{ position: 'sticky', top: 0, zIndex: 1 }}>Stock Actual</th>
-                <th style={{ position: 'sticky', top: 0, zIndex: 1 }}>Mínimo</th>
-                <th style={{ position: 'sticky', top: 0, zIndex: 1 }}>Max Orden</th>
-              </>
-            )}
-            <th style={{ position: 'sticky', top: 0, zIndex: 1, textAlign: 'right' }}>Acciones</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {items.map(item => (
-            <tr key={item.id}>
-              <td>
-                <div className="d-flex align-items-center">
-                  <IconComponent iconName={item.iconName as IconName} size={18} />
-                  <span className="ms-2">{item.name}</span>
-                </div>
-              </td>
-              {itemType !== 'COMPUESTO' && (
-                <>
-                  <td>{item.quantityInStock ?? "—"}</td>
-                  <td>{item.minStock || "—"}</td>
-                  <td>{item.maxOrder || "—"}</td>
-                </>
-              )}
-              <td className="text-end">
-                {item.type === 'SIMPLE' && (
-                  <button
-                    className="btn btn-sm btn-outline-success me-2"
-                    onClick={() => onManageStock(item)}
-                    title="Gestionar Stock"
-                  >
-                    <PackagePlus size={18} />
-                  </button>
-                )}
-                <button
-                  className="btn btn-sm btn-outline-primary me-2"
-                  onClick={() => onEdit(item)}
-                >
-                  <FilePenLine size={18} />
-                </button>
-
-                <button
-                  className="btn btn-sm btn-outline-danger"
-                  onClick={() => onDelete(item.id)}
-                >
-                  <Trash2 size={18} />
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <Table
+      columns={columns}
+      data={formattedItems}
+      renderRowActions={renderRowActions}
+    />
   );
 };
 
