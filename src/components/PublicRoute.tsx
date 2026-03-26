@@ -9,7 +9,7 @@ interface PublicRouteProps {
 const PublicRoute: React.FC<PublicRouteProps> = ({ children }) => {
   const location = useLocation();
   const { isAuthenticated } = useAuth();
-  const from = location.state?.from?.pathname || "/dashboard";
+  const from = location.state?.from?.pathname || "/menu-management";
 
   if (isAuthenticated) {
     return <Navigate to={from} replace />;

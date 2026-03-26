@@ -5,7 +5,7 @@ import PublicRoute from './components/PublicRoute';
 import Login from './components/Login';
 import BackofficeLogin from './components/BackofficeLogin';
 import Register from './pages/Register';
-import Dashboard from './pages/Dashboard';
+
 import BackofficeUserManagement from './components/BackofficeUserManagement';
 import UserManagement from './components/UserManagement'
 import Layout from './components/Layout';
@@ -67,10 +67,12 @@ function App() {
             }
           />
           <Route
-            path="/dashboard"
+            path="/"
             element={
               <ProtectedRoute>
-                <Dashboard />
+                <Layout>  
+                  <MenuManagementPage />
+                </Layout>
               </ProtectedRoute>
             }
           />
@@ -205,7 +207,7 @@ function App() {
               {/* </Layout> */}
             </ProtectedRoute>
           } />
-          <Route path="/" element={<Navigate to="/login" replace />} />
+
         </Routes>
       </Router>
     </AuthProvider>

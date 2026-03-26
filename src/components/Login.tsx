@@ -26,7 +26,7 @@ const Login: React.FC<LoginProps> = ({ showRegisterLink = true }) => {
     try {
       const success = await loginWithCredentials(username, password);
       if (success) {
-        navigate('/dashboard');
+        navigate('/menu-management');
       } else {
         setError('Error al iniciar sesión');
       }
