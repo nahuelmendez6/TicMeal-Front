@@ -2,7 +2,7 @@ import React from 'react';
 import * as LucideIcons from 'lucide-react';
 import type { LucideProps, LucideIcon } from 'lucide-react';
 
-const iconMapList = {
+export const iconMapList = {
   Plus: LucideIcons.Plus,
   Coffee: LucideIcons.Coffee,
   Sandwich: LucideIcons.Sandwich,
@@ -37,7 +37,7 @@ const iconMapList = {
 
 export type IconName = keyof typeof iconMapList;
 
-const iconMap: Record<string, LucideIcon> = {
+export const iconMap: Record<string, LucideIcon> = {
   ...iconMapList,
   default: LucideIcons.Utensils,
 };

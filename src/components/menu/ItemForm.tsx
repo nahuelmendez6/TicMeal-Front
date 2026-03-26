@@ -1,40 +1,10 @@
-import React from "react";
-import {
-  Plus, Coffee, Sandwich, Apple, Pizza, Trash2, FilePenLine, Beef, Hamburger,
-  IceCreamBowl, Salad, Soup, Utensils, Wine, Banana, Cookie, Croissant, Dessert,
-  Drumstick, EggFried, Ham, IceCreamCone, CupSoda, CakeSlice, Beer, Torus, Donut,
-  Egg, GlassWater, Milk
-} from "lucide-react";
-import type { LucideProps, LucideIcon } from "lucide-react";
+import React, { useState } from "react";
 import Input from "../common/Input";
 import Select from "../common/Select";
+import IconComponent from "../../utilities/icons.utility";
+import type { IconName } from "../../utilities/icons.utility";
+import IconPicker from "./IconPicker";
 import Button from "../common/Button";
-
-// Mapeo directo de iconos Lucide
-const iconMapList = {
-  Plus, Coffee, Sandwich, Apple, Pizza, Trash2, FilePenLine, Beef, Hamburger,
-  IceCreamBowl, Salad, Soup, Utensils, Wine, Banana, Cookie, Croissant, Dessert,
-  Drumstick, EggFried, Ham, IceCreamCone, CupSoda, CakeSlice, Beer, Torus, Donut,
-  Egg, GlassWater, Milk,
-};
-
-export type IconName = keyof typeof iconMapList;
-
-const iconMap: { [key in IconName | "default"]: LucideIcon } = {
-  ...iconMapList,
-  default: Utensils,
-};
-
-interface IconComponentProps extends LucideProps {
-  iconName: IconName | null;
-}
-
-const IconComponent: React.FC<IconComponentProps> = React.memo(
-  ({ iconName, size = 18, className = "mr-2 text-gray-600", color, ...rest }) => {
-    const Icon = iconName ? iconMap[iconName] ?? iconMap.default : iconMap.default;
-    return <Icon size={size} className={className} color={color} {...rest} />;
-  }
-);
 
 // ----------------------------------------------------------------------
 // FORM COMPONENT
@@ -61,6 +31,8 @@ const ItemForm: React.FC<Props> = ({
 }) => {
   const newItem = newItemState!;
   const setNewItem = setNewItemState!;
+
+  const [isIconPickerOpen, setIsIconPickerOpen] = useState(false);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -135,30 +107,33 @@ const ItemForm: React.FC<Props> = ({
           <div className="row">
             <div className="col-sm-12">
               <label className="form-label">Ícono</label>
-              <div className="input-group mb-3">
-                <span className="input-group-text">
-                  <IconComponent iconName={newItem.iconName} />
-                </span>
-
-                <select
-                  name="iconName"
-                  className="form-select"
-                  value={newItem.iconName}
-                  onChange={handleChange}
+              <div className="d-flex align-items-center">
+                <div
+                  className="p-2 border rounded-sm d-flex align-items-center justify-content-center me-3"
+                  style={{ width: '60px', height: '60px' }}
                 >
-                  {Object.keys(iconMapList).map((iconName) => (
-                    <option key={iconName} value={iconName}>
-                      {iconName}
-                    </option>
-                  ))}
-                </select>
+                  <IconComponent iconName={newItem.iconName} size={32} />
+                </div>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={() => setIsIconPickerOpen(true)}
+                >
+                  Cambiar Ícono
+                </Button>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-
+      <IconPicker
+        isOpen={isIconPickerOpen}
+        onClose={() => setIsIconPickerOpen(false)}
+        onSelectIcon={(iconName) => {
+          setNewItem((prev: any) => ({ ...prev, iconName }));
+        }}
+      />
     </form>
   );
 };
