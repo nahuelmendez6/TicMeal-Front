@@ -1,11 +1,10 @@
 import React from 'react';
-import { iconMapList, type IconName } from '../../utilities/icons.utility';
 import IconComponent from '../../utilities/icons.utility';
 
 interface IconPickerProps {
   isOpen: boolean;
   onClose: () => void;
-  onSelectIcon: (iconName: IconName) => void;
+  onSelectIcon: (iconName: string) => void;
 }
 
 const IconPicker: React.FC<IconPickerProps> = ({ isOpen, onClose, onSelectIcon }) => {
@@ -13,7 +12,7 @@ const IconPicker: React.FC<IconPickerProps> = ({ isOpen, onClose, onSelectIcon }
     return null;
   }
 
-  const handleIconClick = (iconName: IconName) => {
+  const handleIconClick = (iconName: string) => {
     onSelectIcon(iconName);
     onClose();
   };
@@ -28,14 +27,19 @@ const IconPicker: React.FC<IconPickerProps> = ({ isOpen, onClose, onSelectIcon }
           </div>
           <div className="modal-body">
             <div className="d-flex flex-wrap justify-content-center">
-              {Object.keys(iconMapList).map((iconName) => (
+              {[
+                "Plus", "Coffee", "Sandwich", "Apple", "Pizza", "Trash2", "Beef", "Hamburger",
+                "IceCreamBowl", "Salad", "Soup", "Utensils", "Wine", "Banana", "Cookie", "Croissant", "Dessert",
+                "Drumstick", "EggFried", "Ham", "IceCreamCone", "CupSoda", "CakeSlice", "Beer", "Torus", "Donut",
+                "Egg", "GlassWater", "Milk", "PackagePlus", "FilePenLine"
+              ].map((iconName) => (
                 <div
                   key={iconName}
                   className="p-2 m-1 border rounded-sm d-flex align-items-center justify-content-center"
                   style={{ cursor: 'pointer', width: '60px', height: '60px' }}
-                  onClick={() => handleIconClick(iconName as IconName)}
+                  onClick={() => handleIconClick(iconName)}
                 >
-                  <IconComponent iconName={iconName as IconName} size={32} />
+                  <IconComponent iconName={iconName} size={48} />
                 </div>
               ))}
             </div>

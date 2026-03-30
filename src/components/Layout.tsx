@@ -14,12 +14,11 @@ import {
   FileText,
   Settings,
   Ticket,
-  ClipboardEdit,
   CookingPot,
-  BookText,
   ShoppingCart
 } from 'lucide-react';
 import Button from './common/Button';
+import IconComponent from '../utilities/icons.utility';
 
 import logonavbar from '../assets/sidebar-logo.png';
 
@@ -175,18 +174,16 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     if (isKitchen) {
         return (
             <>
-              <NavDropdown title="Kitchen" icon={<CookingPot size={20} />}>
-                <NavLink to="/ticket-monitor" title="Ticket Monitor">Ticket Monitor</NavLink>
-                <NavLink to="/kitchen-ticket-create" title="Create Ticket">Create Ticket</NavLink>
-                <NavLink to="/meal-shifts" title="Daily Production">Daily Production</NavLink>
-              </NavDropdown>
-              <NavDropdown title="Inventory" icon={<Archive size={20} />}>
+                        <NavDropdown title="Tickets" icon={<Ticket size={20} />}>
+                          <NavLink to="/ticket-monitor" title="Ticket Monitor">Monitor de Tickets</NavLink>
+                          <NavLink to="/kitchen-ticket-create" title="Create Ticket">Crear Ticket</NavLink>
+                        </NavDropdown>              <NavDropdown title="Inventory" icon={<Archive size={20} />}>
                 <NavLink to="/inventory/audit" title="Audits">Audits</NavLink>
               </NavDropdown>
-              <NavDropdown title="Menu" icon={<BookText size={20} />}>
-                <NavLink to="/menu-management" title="Menu Management">Menu Management</NavLink>
-              </NavDropdown>
-            </>
+                        <NavDropdown title="Gestión de Menú" icon={<IconComponent iconName="BookText" size={20} />}>
+                          <NavLink to="/menu-management" title="Menu Management">Gestión de Menú</NavLink>
+                          <NavLink to="/meal-shifts" title="Daily Production">Producción Diaria</NavLink>
+                        </NavDropdown>            </>
           );
     }
 
@@ -282,7 +279,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               <Button
                 variant="danger"
                 size="sm"
-                title="Salir"
                 onClick={() => {
                   logout();
                   navigate('/login');

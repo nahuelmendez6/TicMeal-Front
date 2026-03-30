@@ -1,42 +1,8 @@
 import React from "react";
-import {
-  Plus, Coffee, Sandwich, Apple, Pizza, Trash2, FilePenLine, Beef, Hamburger,
-  IceCreamBowl, Salad, Soup, Utensils, Wine, Banana, Cookie, Croissant, Dessert,
-  Drumstick, EggFried, Ham, IceCreamCone, CupSoda, CakeSlice, Beer, Torus, Donut,
-  Egg, GlassWater, Milk, PackagePlus
-} from "lucide-react";
-import type { LucideIcon } from "lucide-react";
 import type { MenuItem as MenuItemType } from '../../types/menu';
 import Table from '../common/Table';
 import Button from '../common/Button';
-
-// ----------------------------------------------------------------------
-// ICON MAP DIRECTO
-// ----------------------------------------------------------------------
-
-const iconMapList = {
-  Plus, Coffee, Sandwich, Apple, Pizza, Trash2, FilePenLine, Beef, Hamburger,
-  IceCreamBowl, Salad, Soup, Utensils, Wine, Banana, Cookie, Croissant, Dessert,
-  Drumstick, EggFried, Ham, IceCreamCone, CupSoda, CakeSlice, Beer, Torus, Donut,
-  Egg, GlassWater, Milk,
-};
-
-export type IconName = keyof typeof iconMapList;
-
-const iconMap: { [key in IconName | "default"]: LucideIcon } = {
-  ...iconMapList,
-  default: Utensils,
-};
-
-interface IconComponentProps {
-  iconName: IconName | null;
-  size?: number;
-}
-
-const IconComponent: React.FC<IconComponentProps> = ({ iconName, size = 20 }) => {
-  const Icon = iconName ? iconMap[iconName] ?? iconMap.default : iconMap.default;
-  return <Icon size={size} />;
-};
+import IconComponent from '../../utilities/icons.utility'; // Corrected import path
 
 // ----------------------------------------------------------------------
 // LIST COMPONENT
@@ -57,7 +23,7 @@ const ItemList: React.FC<Props> = ({ items, onEdit, onDelete, onManageStock, ite
     ...(itemType !== 'COMPUESTO' ? [
       { header: 'Stock Actual', accessor: 'quantityInStock' },
       { header: 'Mínimo', accessor: 'minStock' },
-      { header: 'Max Orden', accessor: 'maxOrder' },
+      { header: 'Max Orden', 'accessor': 'maxOrder' },
     ] : []),
   ];
 
@@ -71,7 +37,7 @@ const ItemList: React.FC<Props> = ({ items, onEdit, onDelete, onManageStock, ite
           title="Gestionar Stock"
           className="me-2"
         >
-          <PackagePlus size={18} />
+          <IconComponent iconName="PackagePlus" size={24} /> {/* Increased size */}
         </Button>
       )}
       <Button
@@ -80,7 +46,7 @@ const ItemList: React.FC<Props> = ({ items, onEdit, onDelete, onManageStock, ite
         onClick={() => onEdit(item.originalItem)} // Use originalItem
         className="me-2"
       >
-        <FilePenLine size={18} />
+        <IconComponent iconName="FilePenLine" size={24} /> {/* Increased size */}
       </Button>
 
       <Button
@@ -88,7 +54,7 @@ const ItemList: React.FC<Props> = ({ items, onEdit, onDelete, onManageStock, ite
         size="sm"
         onClick={() => onDelete(item.id)}
       >
-        <Trash2 size={18} />
+        <IconComponent iconName="Trash2" size={24} /> {/* Increased size */}
       </Button>
     </>
   );
@@ -98,7 +64,7 @@ const ItemList: React.FC<Props> = ({ items, onEdit, onDelete, onManageStock, ite
     ...item,
     name: (
       <div className="d-flex align-items-center">
-        <IconComponent iconName={item.iconName as IconName} size={18} />
+        <IconComponent iconName={item.iconName} size={24} /> {/* Increased size */}
         <span className="ms-2">{item.name}</span>
       </div>
     ),
