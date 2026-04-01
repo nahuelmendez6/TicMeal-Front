@@ -19,6 +19,7 @@ export interface Ingredient {
   companyId: string | null;
   lots: IngredientLot[];
   isActive?: boolean;
+  isFresh?: boolean; // Added isFresh field
 }
 
 export interface RecipeIngredient {

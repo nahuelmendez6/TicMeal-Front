@@ -144,6 +144,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               <NavDropdown title="Cocina" icon={<Utensils size={20} />}>
                 <NavLink to="/menu-management" title="Menu Management">Gestión de Menú</NavLink>
                 <NavLink to="/shifts" title="Shifts">Turnos</NavLink>
+                <NavLink to="/production-plan" title="Production Plan">Plan de Producción</NavLink>
               </NavDropdown>
               <NavDropdown title="Inventory" icon={<Archive size={20} />}>
                 <NavLink to="/inventory/audit" title="Audits">Audits</NavLink>
@@ -180,9 +181,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                         </NavDropdown>              <NavDropdown title="Inventory" icon={<Archive size={20} />}>
                 <NavLink to="/inventory/audit" title="Audits">Audits</NavLink>
               </NavDropdown>
-                        <NavDropdown title="Gestión de Menú" icon={<IconComponent iconName="BookText" size={20} />}>
+                        <NavDropdown title="Cocina" icon={<Utensils size={20} />}>
                           <NavLink to="/menu-management" title="Menu Management">Gestión de Menú</NavLink>
-                          <NavLink to="/meal-shifts" title="Daily Production">Producción Diaria</NavLink>
+                          <NavLink to="/meal-shifts" title="Daily Production">Gestión de Producción Diaria</NavLink>
+                          <NavLink to="/production-plan" title="Production Plan">Plan de Producción</NavLink>
                         </NavDropdown>            </>
           );
     }

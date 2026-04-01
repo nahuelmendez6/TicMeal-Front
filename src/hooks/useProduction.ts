@@ -1,6 +1,6 @@
 // src/hooks/useProduction.ts
 import { useState, useCallback } from 'react';
-import { productionService, PickingList } from '../services/production.service';
+import { productionService, type PickingList } from '../services/production.service';
 
 export const useProduction = () => {
   const [pickingList, setPickingList] = useState<PickingList | null>(null);

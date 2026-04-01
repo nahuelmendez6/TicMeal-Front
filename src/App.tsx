@@ -26,6 +26,7 @@ import PurchaseOrderDetailsPage from './pages/PurchaseOrderDetailsPage';
 import WasteLogPage from './pages/WasteLogPage';
 import InventoryAuditPage from './pages/InventoryAuditPage'; // New import
 import InventoryVariancePage from './pages/InventoryVariancePage'; // New import
+import ProductionPlanPage from './pages/ProductionPlanPage'; // New import
 import './App.css';
 
 function App() {
@@ -207,6 +208,13 @@ function App() {
               {/* </Layout> */}
             </ProtectedRoute>
           } />
+          <Route path="/production-plan" element={
+            <ProtectedRoute>
+              <Layout>
+                <ProductionPlanPage />
+              </Layout>
+            </ProtectedRoute>
+          } />
 
         </Routes>
       </Router>
@@ -215,4 +223,5 @@ function App() {
 }
 
 export default App;
+
 

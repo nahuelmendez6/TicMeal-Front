@@ -16,6 +16,7 @@ const IngredientForm: React.FC<IngredientFormProps> = ({ editingIngredient, onSa
   const [unit, setUnit] = useState('KILOGRAM');
   const [minStock, setMinStock] = useState<number | ''>('');
   const [shrinkagePercentage, setShrinkagePercentage] = useState<number | ''>('');
+  const [isFresh, setIsFresh] = useState<boolean>(false); // New state for isFresh
 
   useEffect(() => {
     if (editingIngredient) {
@@ -23,11 +24,13 @@ const IngredientForm: React.FC<IngredientFormProps> = ({ editingIngredient, onSa
       setUnit(editingIngredient.unit);
       setMinStock(editingIngredient.minStock ?? '');
       setShrinkagePercentage(editingIngredient.shrinkagePercentage ?? '');
+      setIsFresh(editingIngredient.isFresh ?? false); // Initialize isFresh
     } else {
       setName('');
       setUnit('KILOGRAM');
       setMinStock('');
       setShrinkagePercentage('');
+      setIsFresh(false); // Reset isFresh for new ingredient
     }
   }, [editingIngredient]);
 
@@ -39,6 +42,7 @@ const IngredientForm: React.FC<IngredientFormProps> = ({ editingIngredient, onSa
       minStock: Number(minStock),
       shrinkagePercentage: Number(shrinkagePercentage),
       companyId: null, // Assuming companyId is handled by the backend
+      isFresh, // Include isFresh in the saved object
     });
   };
 
@@ -86,6 +90,18 @@ const IngredientForm: React.FC<IngredientFormProps> = ({ editingIngredient, onSa
                 onChange={(e) => setShrinkagePercentage(e.target.value === '' ? '' : Number(e.target.value))}
                 placeholder="Ej: 20"
               />
+              <div className="form-check mt-3">
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  id="isFresh"
+                  checked={isFresh}
+                  onChange={(e) => setIsFresh(e.target.checked)}
+                />
+                <label className="form-check-label" htmlFor="isFresh">
+                  Es Ingrediente Fresco (JIT)
+                </label>
+              </div>
             </div>
             <div className="modal-footer">
               <Button type="button" variant="secondary" onClick={onCancel}>Cancelar</Button>
