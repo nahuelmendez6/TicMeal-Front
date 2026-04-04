@@ -1,5 +1,6 @@
 // src/types/menu.ts
-import type { Ingredient, IngredientLot } from './ingtredient'
+import type { Ingredient, IngredientLot } from './ingtredient';
+import type { NutritionalInfo } from './nutritionalInfo';
 
 export interface Category {
   id: number;
@@ -31,6 +32,7 @@ export interface MenuItem {
   type: 'SIMPLE' | 'COMPUESTO';
   lots: IngredientLot[]; // For SIMPLE items
   recipeIngredients: RecipeIngredientRelation[]; // For COMPUESTO items
+  nutritionalInfo?: NutritionalInfo;
 }
 
 
