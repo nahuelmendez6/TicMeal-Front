@@ -1,4 +1,4 @@
-// src/types/ingredient.ts
+import type { NutritionalInfo } from './nutritionalInfo';
 
 export interface IngredientLot {
   id: number;
@@ -16,6 +16,7 @@ export interface Ingredient {
   quantityInStock: number; // Calculated field
   minStock?: number;
   shrinkagePercentage?: number;
+  nutritionalInfo?: NutritionalInfo;
   companyId: string | null;
   lots: IngredientLot[];
   isActive?: boolean;
