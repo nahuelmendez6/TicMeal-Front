@@ -14,7 +14,7 @@ interface IngredientFormProps {
 
 const IngredientForm: React.FC<IngredientFormProps> = ({ editingIngredient, onSave, onCancel }) => {
   const [name, setName] = useState('');
-  const [unit, setUnit] = useState('KILOGRAM');
+  const [unit, setUnit] = useState('kg');
   const [minStock, setMinStock] = useState<number | ''>('');
   const [shrinkagePercentage, setShrinkagePercentage] = useState<number | ''>('');
   const [isFresh, setIsFresh] = useState<boolean>(false);
@@ -44,7 +44,7 @@ const IngredientForm: React.FC<IngredientFormProps> = ({ editingIngredient, onSa
       setSodium(editingIngredient.nutritionalInfo?.sodium ?? '');
     } else {
       setName('');
-      setUnit('KILOGRAM');
+      setUnit('kg');
       setMinStock('');
       setShrinkagePercentage('');
       setIsFresh(false);
@@ -107,9 +107,11 @@ const IngredientForm: React.FC<IngredientFormProps> = ({ editingIngredient, onSa
                 onChange={(e) => setUnit(e.target.value)}
                 required
               >
-                <option value="KILOGRAM">Kilogramo</option>
-                <option value="LITER">Litro</option>
-                <option value="UNIT">Unidad</option>
+                <option value="kg">Kilogramo</option>
+                <option value="g">Gramo</option>
+                <option value="l">Litro</option>
+                <option value="ml">Mililitro</option>
+                <option value="unit">Unidad</option>
               </Select>
               <Input
                 label="Stock Mínimo"
