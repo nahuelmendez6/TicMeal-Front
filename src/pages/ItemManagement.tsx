@@ -52,17 +52,24 @@ const ItemManagement: React.FC<ItemManagementProps> = ({ itemType }) => {
     maxOrder: 0,
     iconName: 'Coffee',
     type: itemType || 'SIMPLE',
+    nutritionalInfo: itemType === 'SIMPLE' ? {
+      calories: '',
+      protein: '',
+      carbohydrates: '',
+      fat: '',
+      sugar: '',
+      sodium: '',
+    } : undefined,
   });
 
-  const initialNutritionalState = {
-    calories: '',
-    protein: '',
-    carbohydrates: '',
-    fat: '',
-    sugar: '',
-    sodium: '',
+  const setNutritionalInfo = (newNutritionalInfo: NutritionalInfo | ((prev: NutritionalInfo) => NutritionalInfo)) => {
+    setNewItem(prev => {
+      const updatedInfo = typeof newNutritionalInfo === 'function'
+        ? newNutritionalInfo(prev.nutritionalInfo as NutritionalInfo)
+        : newNutritionalInfo;
+      return { ...prev, nutritionalInfo: updatedInfo };
+    });
   };
-  const [nutritionalInfo, setNutritionalInfo] = useState(initialNutritionalState);
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -161,9 +168,17 @@ const ItemManagement: React.FC<ItemManagementProps> = ({ itemType }) => {
       categoryId: categories.length > 0 ? String(categories[0].id) : '',
       iconName: 'Coffee',
       type: itemType || 'SIMPLE',
+      nutritionalInfo: itemType === 'SIMPLE' ? {
+        calories: '',
+        protein: '',
+        carbohydrates: '',
+        fat: '',
+        sugar: '',
+        sodium: '',
+      } : undefined,
     });
     setRecipeInputs([]);
-    setNutritionalInfo(initialNutritionalState); // Reset nutritional info
+
     setIsModalOpen(true);
   };
 
@@ -202,9 +217,17 @@ const ItemManagement: React.FC<ItemManagementProps> = ({ itemType }) => {
       categoryId: categories.length > 0 ? String(categories[0].id) : '',
       iconName: 'Coffee',
       type: itemType || 'SIMPLE',
+      nutritionalInfo: itemType === 'SIMPLE' ? {
+        calories: '',
+        protein: '',
+        carbohydrates: '',
+        fat: '',
+        sugar: '',
+        sodium: '',
+      } : undefined,
     });
     setRecipeInputs([]);
-    setNutritionalInfo(initialNutritionalState); // Reset nutritional info
+
     setIsModalOpen(false);
   };
 
@@ -305,7 +328,7 @@ const ItemManagement: React.FC<ItemManagementProps> = ({ itemType }) => {
                   newItemState={newItem}
                   setNewItemState={setNewItem}
                   recipeIngredients={recipeInputs}
-                  nutritionalInfoState={[nutritionalInfo, setNutritionalInfo]}
+                  nutritionalInfoState={[newItem.nutritionalInfo as NutritionalInfo, setNutritionalInfo]}
                 />
                 {itemType === 'COMPUESTO' && (
                   <div className="mt-4">

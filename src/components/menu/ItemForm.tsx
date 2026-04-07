@@ -52,7 +52,11 @@ const ItemForm: React.FC<Props> = ({
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(newItem, recipeIngredients, nutritionalInfo);
+    onSubmit(
+      newItem,
+      recipeIngredients,
+      newItem.type === 'SIMPLE' ? nutritionalInfo : undefined
+    );
   };
 
   const handleNutritionalChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -139,49 +143,53 @@ const ItemForm: React.FC<Props> = ({
         </div>
       </div>
 
-      <h6 className="mt-4 mb-3">Información Nutricional (por 100g o unidad base)</h6>
-      <Input
-        label="Calorías"
-        type="number"
-        name="calories"
-        value={nutritionalInfo.calories ?? ''}
-        onChange={handleNutritionalChange}
-      />
-      <Input
-        label="Proteínas (g)"
-        type="number"
-        name="protein"
-        value={nutritionalInfo.protein ?? ''}
-        onChange={handleNutritionalChange}
-      />
-      <Input
-        label="Carbohidratos (g)"
-        type="number"
-        name="carbohydrates"
-        value={nutritionalInfo.carbohydrates ?? ''}
-        onChange={handleNutritionalChange}
-      />
-      <Input
-        label="Grasas (g)"
-        type="number"
-        name="fat"
-        value={nutritionalInfo.fat ?? ''}
-        onChange={handleNutritionalChange}
-      />
-      <Input
-        label="Azúcar (g) (Opcional)"
-        type="number"
-        name="sugar"
-        value={nutritionalInfo.sugar ?? ''}
-        onChange={handleNutritionalChange}
-      />
-      <Input
-        label="Sodio (mg) (Opcional)"
-        type="number"
-        name="sodium"
-        value={nutritionalInfo.sodium ?? ''}
-        onChange={handleNutritionalChange}
-      />
+      {newItem.type === 'SIMPLE' && (
+        <>
+          <h6 className="mt-4 mb-3">Información Nutricional (por 100g o unidad base)</h6>
+          <Input
+            label="Calorías"
+            type="number"
+            name="calories"
+            value={nutritionalInfo.calories ?? ''}
+            onChange={handleNutritionalChange}
+          />
+          <Input
+            label="Proteínas (g)"
+            type="number"
+            name="protein"
+            value={nutritionalInfo.protein ?? ''}
+            onChange={handleNutritionalChange}
+          />
+          <Input
+            label="Carbohidratos (g)"
+            type="number"
+            name="carbohydrates"
+            value={nutritionalInfo.carbohydrates ?? ''}
+            onChange={handleNutritionalChange}
+          />
+          <Input
+            label="Grasas (g)"
+            type="number"
+            name="fat"
+            value={nutritionalInfo.fat ?? ''}
+            onChange={handleNutritionalChange}
+          />
+          <Input
+            label="Azúcar (g) (Opcional)"
+            type="number"
+            name="sugar"
+            value={nutritionalInfo.sugar ?? ''}
+            onChange={handleNutritionalChange}
+          />
+          <Input
+            label="Sodio (mg) (Opcional)"
+            type="number"
+            name="sodium"
+            value={nutritionalInfo.sodium ?? ''}
+            onChange={handleNutritionalChange}
+          />
+        </>
+      )}
 
       <IconPicker
         isOpen={isIconPickerOpen}
