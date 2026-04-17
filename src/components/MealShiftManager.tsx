@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import DailyProductionLog from './DailyProductionLog';
 import MenuPlanningTab from './MenuPlanningTab';
+import TimeslotManager from './TimeslotManager';
 
 const MealShiftManager: React.FC = () => {
   const [activeTab, setActiveTab] = useState('daily');
@@ -12,12 +13,7 @@ const MealShiftManager: React.FC = () => {
       case 'planning':
         return <MenuPlanningTab />;
       case 'slots':
-        return (
-          <div className="text-center p-5">
-            <h3>Configuración de Slots</h3>
-            <p className="text-muted">Módulo de slots de entrega en desarrollo.</p>
-          </div>
-        );
+        return <TimeslotManager />;
       default:
         return <DailyProductionLog />;
     }
