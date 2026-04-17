@@ -1,5 +1,5 @@
 import api from './api';
-import { Menu, CreateMenuDto, UpdateMenuDto, AddMenuOptionDto } from '../types/menu-planning';
+import type { Menu, CreateMenuDto, UpdateMenuDto, AddMenuOptionDto } from '../types/menu-planning';
 
 export const menuPlanningService = {
   getAll: async (): Promise<Menu[]> => {

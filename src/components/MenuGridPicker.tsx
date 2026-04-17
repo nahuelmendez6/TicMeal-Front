@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, MenuDay, MenuOption, AddMenuOptionDto } from '../types/menu-planning';
-import { MenuItem } from '../types/menu';
+import type { Menu, MenuDay, MenuOption, AddMenuOptionDto } from '../types/menu-planning';
+import type { MenuItem } from '../types/menu';
 import { fetchShifts } from '../services/shift.services';
 import { menuItemsService } from '../services/menu.items.service';
 import Button from './common/Button';

@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { menuPlanningService } from '../services/menu.planning.service';
-import { Menu, CreateMenuDto, UpdateMenuDto, AddMenuOptionDto } from '../types/menu-planning';
+import type { Menu, CreateMenuDto, UpdateMenuDto, AddMenuOptionDto } from '../types/menu-planning';
 
 export const useMenuPlanning = () => {
   const [menus, setMenus] = useState<Menu[]>([]);
@@ -14,7 +14,10 @@ export const useMenuPlanning = () => {
       const data = await menuPlanningService.getAll();
       setMenus(data);
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Error fetching menus');
+      console.error('[useMenuPlanning] Error fetching menus:', err);
+      const status = err.response?.status;
+      const msg = err.response?.data?.message || err.message;
+      setError(`Error fetching menus${status ? ` (${status})` : ''}: ${msg}`);
     } finally {
       setLoading(false);
     }

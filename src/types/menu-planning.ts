@@ -1,4 +1,5 @@
-import { MenuItem } from './menu';
+import type { MenuItem } from './menu';
+
 
 export interface Menu {
   id: string;

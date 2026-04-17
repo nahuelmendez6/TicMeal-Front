@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Button from './common/Button';
-import { CreateMenuDto } from '../types/menu-planning';
+import type { CreateMenuDto } from '../types/menu-planning';
 
 interface MenuPlanFormModalProps {
   show: boolean;

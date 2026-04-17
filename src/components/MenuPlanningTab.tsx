@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useMenuPlanning } from '../hooks/useMenuPlanning';
-import { Menu } from '../types/menu-planning';
+import type { Menu } from '../types/menu-planning';
 import Button from './common/Button';
 import Card from './common/Card';
 import { Plus, Eye, CheckCircle, XCircle } from 'lucide-react';

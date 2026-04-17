@@ -3,7 +3,7 @@ import { useTimeslots } from '../hooks/useTimeslots';
 import Card from './common/Card';
 import Button from './common/Button';
 import { Plus, Trash2, Clock, Users } from 'lucide-react';
-import { CreateTimeslotDto } from '../types/reservation';
+import type { CreateTimeslotDto } from '../types/reservation';
 
 const TimeslotManager: React.FC = () => {
   const { timeslots, loading, error, fetchTimeslots, createTimeslot, deleteTimeslot } = useTimeslots();
