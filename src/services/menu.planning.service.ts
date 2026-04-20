@@ -12,6 +12,11 @@ export const menuPlanningService = {
     return response.data;
   },
 
+  getOptions: async (id: string): Promise<MenuDay[]> => {
+    const response = await api.get(`/menus/${id}/options`);
+    return response.data;
+  },
+
   getPublished: async (): Promise<Menu[]> => {
     const response = await api.get('/menus/published');
     return response.data;

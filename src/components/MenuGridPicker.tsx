@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import type { Menu, MenuDay, MenuOption, AddMenuOptionDto } from '../types/menu-planning';
 import type { MenuItem } from '../types/menu';
 import { fetchShifts } from '../services/shift.services';
 import { menuItemsService } from '../services/menu.items.service';
+import { menuPlanningService } from '../services/menu.planning.service';
 import Button from './common/Button';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2, Loader2 } from 'lucide-react';
 
 interface MenuGridPickerProps {
   menu: Menu;
@@ -15,12 +16,27 @@ interface MenuGridPickerProps {
 const MenuGridPicker: React.FC<MenuGridPickerProps> = ({ menu, onAddOption, onRefresh }) => {
   const [shifts, setShifts] = useState<any[]>([]);
   const [allProducts, setAllProducts] = useState<MenuItem[]>([]);
+  const [menuDays, setMenuDays] = useState<MenuDay[]>([]);
   const [selectedCell, setSelectedCell] = useState<{ date: string, shiftId: number } | null>(null);
   const [selectedMenuItemId, setSelectedMenuItemId] = useState<number>(0);
   const [loading, setLoading] = useState(false);
+  const [dataLoading, setDataLoading] = useState(false);
+
+  const loadMenuOptions = useCallback(async () => {
+    if (!menu.id) return;
+    setDataLoading(true);
+    try {
+      const options = await menuPlanningService.getOptions(menu.id);
+      setMenuDays(options);
+    } catch (err) {
+      console.error('Error loading menu options:', err);
+    } finally {
+      setDataLoading(false);
+    }
+  }, [menu.id]);
 
   useEffect(() => {
-    const loadData = async () => {
+    const loadInitialData = async () => {
       try {
         const [shiftsData, itemsData] = await Promise.all([
           fetchShifts(),
@@ -32,8 +48,12 @@ const MenuGridPicker: React.FC<MenuGridPickerProps> = ({ menu, onAddOption, onRe
         console.error('Error loading shifts/products:', err);
       }
     };
-    loadData();
+    loadInitialData();
   }, []);
+
+  useEffect(() => {
+    loadMenuOptions();
+  }, [loadMenuOptions]);
 
   const datesInRange: string[] = [];
   const start = new Date(menu.startDate);
@@ -58,6 +78,7 @@ const MenuGridPicker: React.FC<MenuGridPickerProps> = ({ menu, onAddOption, onRe
         shiftIds: [selectedCell.shiftId]
       });
       setSelectedCell(null);
+      await loadMenuOptions();
       onRefresh();
     } catch (err) {
       console.error(err);
@@ -67,14 +88,27 @@ const MenuGridPicker: React.FC<MenuGridPickerProps> = ({ menu, onAddOption, onRe
   };
 
   const getOptionsForCell = (date: string, shiftId: number) => {
-    const day = menu.days?.find(d => d.date === date);
+    const day = menuDays.find(d => {
+      const dDate = d.date.includes('T') ? d.date.split('T')[0] : d.date;
+      return dDate === date;
+    });
     if (!day) return [];
-    return day.options?.filter(opt => opt.shifts?.some(s => s.id === shiftId)) || [];
+    return day.menuOptions?.filter((opt: any) => 
+      opt.shifts?.some((s: any) => s.id === shiftId)
+    ) || [];
   };
 
   return (
-    <div className="table-responsive mt-4">
-      <table className="table table-bordered align-middle">
+    <div className="table-responsive mt-4 position-relative">
+      {dataLoading && (
+        <div className="position-absolute top-50 start-50 translate-middle" style={{ zIndex: 10 }}>
+          <div className="bg-white p-3 rounded shadow-sm d-flex align-items-center gap-2 border">
+            <Loader2 className="animate-spin text-primary" size={24} />
+            <span>Cargando opciones...</span>
+          </div>
+        </div>
+      )}
+      <table className={`table table-bordered align-middle ${dataLoading ? 'opacity-50' : ''}`}>
         <thead className="table-light">
           <tr>
             <th style={{ minWidth: '150px' }}>Turno / Fecha</th>
@@ -97,12 +131,13 @@ const MenuGridPicker: React.FC<MenuGridPickerProps> = ({ menu, onAddOption, onRe
                       style={{ cursor: 'pointer', minHeight: '80px', minWidth: '150px' }}
                       onClick={() => handleCellClick(date, shift.id)}>
                     <div className="d-flex flex-column gap-2 align-items-center">
-                      {options.map(opt => (
-                        <div key={opt.id} className="badge bg-primary text-wrap p-2 w-100 d-flex justify-content-between align-items-center">
-                          <span style={{ fontSize: '0.75rem' }}>{opt.menuItem?.name || `Producto #${opt.menuItemId}`}</span>
-                          {/* <Trash2 size={12} className="ms-1" style={{ cursor: 'pointer' }} /> */}
-                        </div>
-                      ))}
+                      {options.length > 0 ? (
+                        options.map((opt: any) => (
+                          <div key={opt.id} className="badge bg-primary text-wrap p-2 w-100 d-flex justify-content-between align-items-center">
+                            <span style={{ fontSize: '0.75rem' }}>{opt.menuItem?.name || `ID #${opt.menuItemId}`}</span>
+                          </div>
+                        ))
+                      ) : null}
                       <Button variant="outline-primary" size="sm" className="w-100 py-0">
                         <Plus size={14} />
                       </Button>
@@ -120,7 +155,9 @@ const MenuGridPicker: React.FC<MenuGridPickerProps> = ({ menu, onAddOption, onRe
           <div className="modal-dialog modal-dialog-centered">
             <div className="modal-content">
               <div className="modal-header">
-                <h5 className="modal-title">Asignar Plato a {selectedCell.date} - Turno #{selectedCell.shiftId}</h5>
+                <h5 className="modal-title">
+                  Asignar Plato a {selectedCell.date} - {shifts.find(s => s.id === selectedCell.shiftId)?.name || `Turno #${selectedCell.shiftId}`}
+                </h5>
                 <button type="button" className="btn-close" onClick={() => setSelectedCell(null)}></button>
               </div>
               <div className="modal-body">

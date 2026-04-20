@@ -14,7 +14,7 @@ export interface MenuDay {
   id: string;
   date: string;
   menuId: string;
-  options?: MenuOption[];
+  menuOptions?: MenuOption[];
 }
 
 export interface MenuOption {

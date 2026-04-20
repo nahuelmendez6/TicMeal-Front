@@ -7,6 +7,8 @@ import { Plus, Eye, CheckCircle, XCircle } from 'lucide-react';
 import MenuPlanFormModal from './MenuPlanFormModal';
 import MenuGridPicker from './MenuGridPicker';
 
+import { menuPlanningService } from '../services/menu.planning.service';
+
 const MenuPlanningTab: React.FC = () => {
   const { menus, loading, error, fetchMenus, createMenu, updateMenu, addMenuOption } = useMenuPlanning();
   const [selectedMenu, setSelectedMenu] = useState<Menu | null>(null);
@@ -16,11 +18,23 @@ const MenuPlanningTab: React.FC = () => {
     fetchMenus();
   }, [fetchMenus]);
 
+  const handleSelectMenu = async (menu: Menu) => {
+    try {
+      // Fetch full details with relations
+      const fullMenu = await menuPlanningService.getById(menu.id);
+      setSelectedMenu(fullMenu);
+    } catch (err) {
+      console.error('Error fetching menu details:', err);
+      // Fallback to basic data if fetch fails
+      setSelectedMenu(menu);
+    }
+  };
+
   const handleTogglePublish = async (menu: Menu) => {
     try {
       await updateMenu(menu.id, { isPublished: !menu.isPublished });
       if (selectedMenu?.id === menu.id) {
-        setSelectedMenu({ ...menu, isPublished: !menu.isPublished });
+        setSelectedMenu({ ...selectedMenu, isPublished: !menu.isPublished });
       }
     } catch (err) {
       console.error(err);
@@ -63,7 +77,7 @@ const MenuPlanningTab: React.FC = () => {
                     key={menu.id} 
                     className={`list-group-item list-group-item-action ${selectedMenu?.id === menu.id ? 'active' : ''}`}
                     style={{ cursor: 'pointer' }}
-                    onClick={() => setSelectedMenu(menu)}
+                    onClick={() => handleSelectMenu(menu)}
                   >
                     <div className="d-flex justify-content-between align-items-center">
                       <div>
