@@ -39,5 +39,9 @@ export const menuPlanningService = {
   addOption: async (data: AddMenuOptionDto): Promise<any> => {
     const response = await api.post('/menus/options', data);
     return response.data;
+  },
+
+  removeOption: async (optionId: string): Promise<void> => {
+    await api.delete(`/menus/options/${optionId}`);
   }
 };

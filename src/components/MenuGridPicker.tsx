@@ -10,10 +10,11 @@ import { Plus, Trash2, Loader2 } from 'lucide-react';
 interface MenuGridPickerProps {
   menu: Menu;
   onAddOption: (data: AddMenuOptionDto) => Promise<void>;
+  onRemoveOption: (optionId: string) => Promise<void>;
   onRefresh: () => void;
 }
 
-const MenuGridPicker: React.FC<MenuGridPickerProps> = ({ menu, onAddOption, onRefresh }) => {
+const MenuGridPicker: React.FC<MenuGridPickerProps> = ({ menu, onAddOption, onRemoveOption, onRefresh }) => {
   const [shifts, setShifts] = useState<any[]>([]);
   const [allProducts, setAllProducts] = useState<MenuItem[]>([]);
   const [menuDays, setMenuDays] = useState<MenuDay[]>([]);
@@ -87,6 +88,22 @@ const MenuGridPicker: React.FC<MenuGridPickerProps> = ({ menu, onAddOption, onRe
     }
   };
 
+  const handleRemoveOption = async (e: React.MouseEvent, optionId: string) => {
+    e.stopPropagation();
+    if (!window.confirm('¿Está seguro de que desea eliminar este plato del menú?')) return;
+    
+    setLoading(true);
+    try {
+      await onRemoveOption(optionId);
+      await loadMenuOptions();
+      onRefresh();
+    } catch (err) {
+      console.error('Error removing option:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const getOptionsForCell = (date: string, shiftId: number) => {
     const day = menuDays.find(d => {
       const dDate = d.date.includes('T') ? d.date.split('T')[0] : d.date;
@@ -135,6 +152,14 @@ const MenuGridPicker: React.FC<MenuGridPickerProps> = ({ menu, onAddOption, onRe
                         options.map((opt: any) => (
                           <div key={opt.id} className="badge bg-primary text-wrap p-2 w-100 d-flex justify-content-between align-items-center">
                             <span style={{ fontSize: '0.75rem' }}>{opt.menuItem?.name || `ID #${opt.menuItemId}`}</span>
+                            <button 
+                              className="btn btn-sm text-white p-0 ms-1" 
+                              style={{ opacity: 0.8 }}
+                              onClick={(e) => handleRemoveOption(e, opt.id)}
+                              title="Eliminar"
+                            >
+                              <Trash2 size={12} />
+                            </button>
                           </div>
                         ))
                       ) : null}

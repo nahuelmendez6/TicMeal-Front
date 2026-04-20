@@ -10,7 +10,7 @@ import MenuGridPicker from './MenuGridPicker';
 import { menuPlanningService } from '../services/menu.planning.service';
 
 const MenuPlanningTab: React.FC = () => {
-  const { menus, loading, error, fetchMenus, createMenu, updateMenu, addMenuOption } = useMenuPlanning();
+  const { menus, loading, error, fetchMenus, createMenu, updateMenu, addMenuOption, removeMenuOption } = useMenuPlanning();
   const [selectedMenu, setSelectedMenu] = useState<Menu | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
 
@@ -106,7 +106,8 @@ const MenuPlanningTab: React.FC = () => {
             <Card title={`Detalle: ${selectedMenu.startDate} al ${selectedMenu.endDate}`}>
               <MenuGridPicker 
                 menu={selectedMenu} 
-                onAddOption={addMenuOption} 
+                onAddOption={addMenuOption}
+                onRemoveOption={removeMenuOption}
                 onRefresh={fetchMenus}
               />
             </Card>

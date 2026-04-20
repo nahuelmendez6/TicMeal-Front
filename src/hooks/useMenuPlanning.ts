@@ -92,6 +92,20 @@ export const useMenuPlanning = () => {
     }
   };
 
+  const removeMenuOption = async (optionId: string) => {
+    setLoading(true);
+    setError(null);
+    try {
+      await menuPlanningService.removeOption(optionId);
+      await fetchMenus();
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Error removing menu option');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     menus,
     loading,
@@ -101,6 +115,7 @@ export const useMenuPlanning = () => {
     createMenu,
     updateMenu,
     deleteMenu,
-    addMenuOption
+    addMenuOption,
+    removeMenuOption
   };
 };
