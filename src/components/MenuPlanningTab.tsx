@@ -27,6 +27,16 @@ const MenuPlanningTab: React.FC = () => {
     }
   };
 
+  const getPeriodicityLabel = (periodicity: string) => {
+    switch (periodicity) {
+      case 'DAILY': return 'Diario';
+      case 'WEEKLY': return 'Semanal';
+      case 'BIWEEKLY': return 'Quincenal';
+      case 'MONTHLY': return 'Mensual';
+      default: return periodicity;
+    }
+  };
+
   return (
     <div>
       <div className="d-flex justify-content-between align-items-center mb-4">
@@ -57,7 +67,7 @@ const MenuPlanningTab: React.FC = () => {
                   >
                     <div className="d-flex justify-content-between align-items-center">
                       <div>
-                        <div className="fw-bold">{menu.periodicity}</div>
+                        <div className="fw-bold">{getPeriodicityLabel(menu.periodicity)}</div>
                         <small>{menu.startDate} - {menu.endDate}</small>
                       </div>
                       <div className="d-flex gap-2">

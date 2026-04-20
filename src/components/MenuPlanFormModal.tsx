@@ -13,7 +13,7 @@ const MenuPlanFormModal: React.FC<MenuPlanFormModalProps> = ({ show, onClose, on
   const [formData, setFormData] = useState<CreateMenuDto>({
     startDate: '',
     endDate: '',
-    periodicity: 'Semanal',
+    periodicity: 'WEEKLY',
   });
   const [error, setError] = useState<string | null>(null);
 
@@ -80,10 +80,10 @@ const MenuPlanFormModal: React.FC<MenuPlanFormModalProps> = ({ show, onClose, on
                   value={formData.periodicity}
                   onChange={handleInputChange}
                 >
-                  <option value="Semanal">Semanal</option>
-                  <option value="Quincenal">Quincenal</option>
-                  <option value="Mensual">Mensual</option>
-                  <option value="Único">Único</option>
+                  <option value="DAILY">Diario</option>
+                  <option value="WEEKLY">Semanal</option>
+                  <option value="BIWEEKLY">Quincenal</option>
+                  <option value="MONTHLY">Mensual</option>
                 </select>
               </div>
             </div>
