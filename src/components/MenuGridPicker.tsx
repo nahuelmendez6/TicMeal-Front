@@ -5,6 +5,7 @@ import { fetchShifts } from '../services/shift.services';
 import { menuItemsService } from '../services/menu.items.service';
 import { menuPlanningService } from '../services/menu.planning.service';
 import Button from './common/Button';
+import ConfirmationModal from './ConfirmationModal';
 import { Plus, Trash2, Loader2 } from 'lucide-react';
 
 interface MenuGridPickerProps {
@@ -22,6 +23,7 @@ const MenuGridPicker: React.FC<MenuGridPickerProps> = ({ menu, onAddOption, onRe
   const [selectedMenuItemId, setSelectedMenuItemId] = useState<number>(0);
   const [loading, setLoading] = useState(false);
   const [dataLoading, setDataLoading] = useState(false);
+  const [optionToDelete, setOptionToDelete] = useState<{ id: string, name: string } | null>(null);
 
   const loadMenuOptions = useCallback(async () => {
     if (!menu.id) return;
@@ -88,15 +90,23 @@ const MenuGridPicker: React.FC<MenuGridPickerProps> = ({ menu, onAddOption, onRe
     }
   };
 
-  const handleRemoveOption = async (e: React.MouseEvent, optionId: string) => {
+  const handleRemoveOption = (e: React.MouseEvent, opt: any) => {
     e.stopPropagation();
-    if (!window.confirm('¿Está seguro de que desea eliminar este plato del menú?')) return;
+    setOptionToDelete({
+      id: opt.id,
+      name: opt.menuItem?.name || `Plato #${opt.menuItemId}`
+    });
+  };
+
+  const confirmRemoveOption = async () => {
+    if (!optionToDelete) return;
     
     setLoading(true);
     try {
-      await onRemoveOption(optionId);
+      await onRemoveOption(optionToDelete.id);
       await loadMenuOptions();
       onRefresh();
+      setOptionToDelete(null);
     } catch (err) {
       console.error('Error removing option:', err);
     } finally {
@@ -155,7 +165,7 @@ const MenuGridPicker: React.FC<MenuGridPickerProps> = ({ menu, onAddOption, onRe
                             <button 
                               className="btn btn-sm text-white p-0 ms-1" 
                               style={{ opacity: 0.8 }}
-                              onClick={(e) => handleRemoveOption(e, opt.id)}
+                              onClick={(e) => handleRemoveOption(e, opt)}
                               title="Eliminar"
                             >
                               <Trash2 size={12} />
@@ -209,6 +219,17 @@ const MenuGridPicker: React.FC<MenuGridPickerProps> = ({ menu, onAddOption, onRe
             </div>
           </div>
         </div>
+      )}
+
+      {optionToDelete && (
+        <ConfirmationModal
+          title="Eliminar Plato"
+          message={`¿Está seguro de que desea eliminar "${optionToDelete.name}" de este turno?`}
+          onConfirm={confirmRemoveOption}
+          onCancel={() => setOptionToDelete(null)}
+          isConfirming={loading}
+          confirmButtonText="Eliminar"
+        />
       )}
     </div>
   );
