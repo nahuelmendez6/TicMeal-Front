@@ -20,8 +20,8 @@ export interface MenuDay {
 export interface MenuOption {
   id: string;
   menuDayId: string;
-  productId: number;
-  product?: MenuItem;
+  menuItemId: number;
+  menuItem?: MenuItem;
   shifts?: any[]; // Using any[] for now, will refine if a Shift type is available
 }
 
@@ -41,6 +41,6 @@ export interface UpdateMenuDto {
 export interface AddMenuOptionDto {
   menuId: string;
   date: string;
-  productId: number;
+  menuItemId: number;
   shiftIds: number[];
 }

@@ -16,7 +16,7 @@ const MenuGridPicker: React.FC<MenuGridPickerProps> = ({ menu, onAddOption, onRe
   const [shifts, setShifts] = useState<any[]>([]);
   const [allProducts, setAllProducts] = useState<MenuItem[]>([]);
   const [selectedCell, setSelectedCell] = useState<{ date: string, shiftId: number } | null>(null);
-  const [selectedProductId, setSelectedProductId] = useState<number>(0);
+  const [selectedMenuItemId, setSelectedMenuItemId] = useState<number>(0);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -44,17 +44,17 @@ const MenuGridPicker: React.FC<MenuGridPickerProps> = ({ menu, onAddOption, onRe
 
   const handleCellClick = (date: string, shiftId: number) => {
     setSelectedCell({ date, shiftId });
-    setSelectedProductId(0);
+    setSelectedMenuItemId(0);
   };
 
   const handleAddOptionSubmit = async () => {
-    if (!selectedCell || selectedProductId === 0) return;
+    if (!selectedCell || selectedMenuItemId === 0) return;
     setLoading(true);
     try {
       await onAddOption({
         menuId: menu.id,
         date: selectedCell.date,
-        productId: selectedProductId,
+        menuItemId: selectedMenuItemId,
         shiftIds: [selectedCell.shiftId]
       });
       setSelectedCell(null);
@@ -99,7 +99,7 @@ const MenuGridPicker: React.FC<MenuGridPickerProps> = ({ menu, onAddOption, onRe
                     <div className="d-flex flex-column gap-2 align-items-center">
                       {options.map(opt => (
                         <div key={opt.id} className="badge bg-primary text-wrap p-2 w-100 d-flex justify-content-between align-items-center">
-                          <span style={{ fontSize: '0.75rem' }}>{opt.product?.name || `Producto #${opt.productId}`}</span>
+                          <span style={{ fontSize: '0.75rem' }}>{opt.menuItem?.name || `Producto #${opt.menuItemId}`}</span>
                           {/* <Trash2 size={12} className="ms-1" style={{ cursor: 'pointer' }} /> */}
                         </div>
                       ))}
@@ -128,8 +128,8 @@ const MenuGridPicker: React.FC<MenuGridPickerProps> = ({ menu, onAddOption, onRe
                   <label className="form-label">Seleccionar Plato</label>
                   <select 
                     className="form-select" 
-                    value={selectedProductId} 
-                    onChange={(e) => setSelectedProductId(Number(e.target.value))}
+                    value={selectedMenuItemId} 
+                    onChange={(e) => setSelectedMenuItemId(Number(e.target.value))}
                   >
                     <option value="0">Seleccione un producto...</option>
                     {allProducts.map(p => (
@@ -140,7 +140,7 @@ const MenuGridPicker: React.FC<MenuGridPickerProps> = ({ menu, onAddOption, onRe
               </div>
               <div className="modal-footer">
                 <Button variant="secondary" onClick={() => setSelectedCell(null)}>Cancelar</Button>
-                <Button variant="primary" loading={loading} onClick={handleAddOptionSubmit} disabled={selectedProductId === 0}>
+                <Button variant="primary" loading={loading} onClick={handleAddOptionSubmit} disabled={selectedMenuItemId === 0}>
                   Asignar
                 </Button>
               </div>
