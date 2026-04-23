@@ -1,8 +1,9 @@
 import React from 'react';
 
-interface TableColumn {
+export interface TableColumn {
   header: string;
   accessor: string;
+  render?: (value: any, item: any) => React.ReactNode;
 }
 
 interface TableProps {
@@ -25,9 +26,13 @@ const Table: React.FC<TableProps> = ({ columns, data, renderRowActions }) => {
         </thead>
         <tbody>
           {data.map((item, index) => (
-            <tr key={index}>
+            <tr key={item.id || index}>
               {columns.map((col) => (
-                <td key={col.accessor}>{item[col.accessor]}</td>
+                <td key={col.accessor}>
+                  {col.render 
+                    ? col.render(item[col.accessor], item) 
+                    : item[col.accessor]}
+                </td>
               ))}
               {renderRowActions && (
                 <td className="text-end">

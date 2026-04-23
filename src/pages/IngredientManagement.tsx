@@ -1,7 +1,7 @@
 // src/pages/IngredientManagement.tsx
 import React, { useState, useEffect, useCallback } from 'react';
 import { Plus } from 'lucide-react';
-import { ingredientsService } from '../services/ingredient.service';
+import { ingredientsService, type IngredientSaveDto } from '../services/ingredient.service';
 import IngredientTable from '../components/ingredient/IngredientTable';
 import IngredientForm from '../components/ingredient/IngredientForm';
 import StockMovementModal from '../components/ingredient/StockMovementModal';
@@ -56,11 +56,11 @@ const IngredientManagement: React.FC = () => {
     setIsFormModalOpen(false);
   };
 
-  const handleSaveIngredient = async (ingredientData: Omit<Ingredient, 'id' | 'quantityInStock' | 'lots'>) => {
+  const handleSaveIngredient = async (ingredientData: IngredientSaveDto) => {
     if (!token) return;
     try {
       if (editingIngredient) {
-        await ingredientsService.update(token, editingIngredient.id, ingredientData);
+        await ingredientsService.update(token, editingIngredient.id, ingredientData as Partial<IngredientSaveDto>);
       } else {
         await ingredientsService.create(token, ingredientData);
       }

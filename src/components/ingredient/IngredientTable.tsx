@@ -19,6 +19,17 @@ const IngredientTable: React.FC<IngredientTableProps> = ({ ingredients, onEdit, 
     { header: 'Stock Actual', accessor: 'quantityInStock' },
     { header: 'Stock Mínimo', accessor: 'minStock' },
     { header: 'Merma (%)', accessor: 'shrinkagePercentage' },
+    {
+      header: 'Obs',
+      accessor: 'observations',
+      render: (obs: any[]) => (
+        <div className="d-flex gap-1">
+          {obs?.map((o) => (
+            <span key={o.id} title={o.name} style={{ fontSize: '1.1rem' }}>🖼️</span>
+          ))}
+        </div>
+      ),
+    },
   ];
 
   const renderRowActions = (ingredient: Ingredient) => (

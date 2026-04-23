@@ -1,4 +1,5 @@
 import type { NutritionalInfo } from './nutritionalInfo';
+import type { Observation } from './observation';
 
 export interface IngredientLot {
   id: number;
@@ -21,6 +22,7 @@ export interface Ingredient {
   lots: IngredientLot[];
   isActive?: boolean;
   isFresh?: boolean; // Added isFresh field
+  observations?: Observation[];
 }
 
 export interface RecipeIngredient {

@@ -2,7 +2,9 @@ import api from './api';
 import type { Ingredient } from '../types/ingtredient';
 
 // DTO for creating/updating, omits calculated fields and IDs
-export type IngredientSaveDto = Omit<Ingredient, 'id' | 'quantityInStock' | 'lots' | 'isActive'>;
+export type IngredientSaveDto = Omit<Ingredient, 'id' | 'quantityInStock' | 'lots' | 'isActive' | 'observations'> & {
+  observationIds?: number[];
+};
 
 export const ingredientsService = {
   async getAll(token: string): Promise<Ingredient[]> {
