@@ -7,6 +7,7 @@ import { menuPlanningService } from '../services/menu.planning.service';
 import Button from './common/Button';
 import ConfirmationModal from './ConfirmationModal';
 import { Plus, Trash2, Loader2 } from 'lucide-react';
+import IconComponent from '../utilities/icons.utility';
 
 interface MenuGridPickerProps {
   menu: Menu;
@@ -161,7 +162,10 @@ const MenuGridPicker: React.FC<MenuGridPickerProps> = ({ menu, onAddOption, onRe
                       {options.length > 0 ? (
                         options.map((opt: any) => (
                           <div key={opt.id} className="badge bg-primary text-wrap p-2 w-100 d-flex justify-content-between align-items-center">
-                            <span style={{ fontSize: '0.75rem' }}>{opt.menuItem?.name || `ID #${opt.menuItemId}`}</span>
+                            <div className="d-flex align-items-center">
+                              <IconComponent iconName={opt.menuItem?.iconName} size={20} className="me-1" />
+                              <span style={{ fontSize: '0.75rem' }}>{opt.menuItem?.name || `ID #${opt.menuItemId}`}</span>
+                            </div>
                             <button 
                               className="btn btn-sm text-white p-0 ms-1" 
                               style={{ opacity: 0.8 }}

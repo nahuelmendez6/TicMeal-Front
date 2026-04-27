@@ -13,6 +13,8 @@ const iconSrcMap = Object.keys(menuIconModules).reduce((acc, path) => {
   return acc;
 }, {} as Record<string, string>);
 
+export type IconName = string;
+
 // Dynamic Icon Component - uses provided PNGs or falls back to a placeholder
 const DynamicIcon: React.FC<{ iconName: string; size?: number; className?: string }> = ({ iconName, size = 20, className }) => {
   const src = iconSrcMap[iconName];
@@ -45,12 +47,8 @@ interface IconComponentProps {
   className?: string;
 }
 
-const IconComponent: React.FC<IconComponentProps> = React.memo(
-  ({ iconName, size = 18, className = "mr-2 text-gray-600" }) => {
-    return <DynamicIcon iconName={iconName || "Default"} size={size} className={className} />;
-  }
-);
-
-IconComponent.displayName = "IconComponent";
+const IconComponent: React.FC<IconComponentProps> = ({ iconName, size = 18, className = "" }) => {
+  return <DynamicIcon iconName={iconName || "Default"} size={size} className={className} />;
+};
 
 export default IconComponent;

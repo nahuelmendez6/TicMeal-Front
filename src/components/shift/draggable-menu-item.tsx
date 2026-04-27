@@ -18,10 +18,10 @@ const DraggableMenuItem = React.memo(({ item }: { item: MenuItem }) => {
   return (
     <div
       ref={drag as unknown as React.Ref<HTMLDivElement>}
-      className={`flex items-center p-3 mb-2 bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition duration-150 cursor-grab ${isDragging ? 'opacity-50 border-dashed border-2 border-indigo-500' : 'opacity-100'}`}
+      className={`d-flex align-items-center p-3 mb-2 bg-white border rounded shadow-sm hover-shadow transition-all cursor-grab ${isDragging ? 'opacity-50 border-primary border-dashed' : ''}`}
     >
-      <IconComponent iconName={item.iconName as IconName | null} />
-      <span className="text-gray-800 font-medium">{item.name}</span>
+      <IconComponent iconName={item.iconName as IconName | null} size={32} />
+      <span className="ms-3 fw-medium">{item.name}</span>
     </div>
   );
 });

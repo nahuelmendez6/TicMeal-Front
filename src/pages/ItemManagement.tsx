@@ -23,12 +23,12 @@ interface ItemManagementProps {
 }
 
 const initialNutritionalState: NutritionalInfo = {
-  calories: '',
-  protein: '',
-  carbohydrates: '',
-  fat: '',
-  sugar: '',
-  sodium: '',
+  calories: null,
+  protein: null,
+  carbohydrates: null,
+  fat: null,
+  sugar: null,
+  sodium: null,
 };
 
 // --- Main Component ---
@@ -122,10 +122,16 @@ const ItemManagement: React.FC<ItemManagementProps> = ({ itemType }) => {
     setIsSubmitting(true);
     setError(null);
 
+    // Clean nutritional info to ensure all values are numbers or null, not empty strings
+    const cleanedNutritionalInfo = Object.entries(nutritionalData || {}).reduce((acc, [key, value]) => {
+      acc[key as keyof NutritionalInfo] = (value === '' || value === null || value === undefined) ? null : Number(value);
+      return acc;
+    }, {} as NutritionalInfo);
+
     const itemPayload = {
       ...formData,
       categoryId: formData.categoryId ? parseInt(formData.categoryId, 10) : undefined,
-      nutritionalInfo: nutritionalData,
+      nutritionalInfo: formData.type === 'SIMPLE' ? cleanedNutritionalInfo : undefined,
       observationIds,
     };
 

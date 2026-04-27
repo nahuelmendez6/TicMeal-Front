@@ -3,11 +3,9 @@ import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { TouchBackend } from 'react-dnd-touch-backend';
 import {
-  Plus, Coffee, Sandwich, Apple, Pizza, Trash2, FilePenLine, Beef, Hamburger,
-  IceCreamBowl, Salad, Soup, Utensils, BottleWine, Banana, Cookie, Croissant,
-  Dessert, Drumstick, EggFried, Ham, IceCreamCone, CupSoda, CakeSlice, Beer,
-  Torus, Donut, Egg, GlassWater, Milk,
+  Plus, Trash2,
 } from 'lucide-react';
+import IconComponent from '../utilities/icons.utility';
 
 const getLocalDate = () => {
   const today = new Date();
@@ -18,17 +16,6 @@ const getLocalDate = () => {
 
 const ItemTypes = {
   MENU_ITEM: 'menu_item',
-};
-
-const iconMap: { [key: string]: React.ElementType } = {
-  Plus, Coffee, Sandwich, Apple, Pizza, Trash2, FilePenLine, Beef, Hamburger, IceCreamBowl, Salad, Soup, Utensils, BottleWine, Banana, Cookie, Croissant, Dessert, Drumstick, EggFried, Ham, IceCreamCone, CupSoda, CakeSlice, Beer, Torus, Donut, Egg, GlassWater, Milk,
-  default: Utensils,
-};
-
-// Componente de ícono actualizado para aceptar tamaño y clases personalizadas
-const IconComponent: React.FC<{ iconName: string | null; size?: number; className?: string }> = ({ iconName, size = 18, className = "me-2" }) => {
-  const Icon = iconName ? (iconMap[iconName] || iconMap.default) : iconMap.default;
-  return <Icon size={size} className={className} />;
 };
 
 interface MenuItem {
@@ -82,7 +69,7 @@ const DraggableMenuItem: React.FC<DraggableMenuItemProps> = ({ item }) => {
         title={item.name}
       >
         <div className="card-body p-2 text-center">
-          <IconComponent iconName={item.iconName} size={32} className="d-block mx-auto mb-2" />
+          <IconComponent iconName={item.iconName} size={40} className="d-block mx-auto mb-2" />
           <p className="card-text small text-truncate mb-0" style={{ fontSize: '0.8rem' }}>
             {item.name}
           </p>
@@ -172,10 +159,10 @@ const ShiftDashboard: React.FC<ShiftDashboardProps> = ({
                 <ul className="list-group">
                   {assignedItems[activeShiftId].map(item => (
                     <li key={item.id} className="list-group-item d-flex justify-content-between align-items-center">
-                      <span>
-                        <IconComponent iconName={item.iconName} />
-                        {item.name}
-                      </span>
+                      <div className="d-flex align-items-center">
+                        <IconComponent iconName={item.iconName} size={32} />
+                        <span className="ms-2">{item.name}</span>
+                      </div>
                       <button className="btn btn-sm btn-outline-danger border-0" onClick={() => handleRemove(item.id)}>
                         <Trash2 size={16} />
                       </button>

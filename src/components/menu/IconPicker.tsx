@@ -31,15 +31,16 @@ const IconPicker: React.FC<IconPickerProps> = ({ isOpen, onClose, onSelectIcon }
                 "Plus", "Coffee", "Sandwich", "Apple", "Pizza", "Trash2", "Beef", "Hamburger",
                 "IceCreamBowl", "Salad", "Soup", "Utensils", "Wine", "Banana", "Cookie", "Croissant", "Dessert",
                 "Drumstick", "EggFried", "Ham", "IceCreamCone", "CupSoda", "CakeSlice", "Beer", "Torus", "Donut",
-                "Egg", "GlassWater", "Milk", "PackagePlus", "FilePenLine"
+                "Egg", "GlassWater", "Milk", "PackagePlus", "FilePenLine", "Pasta", "Tea", "Toast", "MenuOne", "Latte"
               ].map((iconName) => (
                 <div
                   key={iconName}
-                  className="p-2 m-1 border rounded-sm d-flex align-items-center justify-content-center"
-                  style={{ cursor: 'pointer', width: '60px', height: '60px' }}
+                  className="p-2 m-1 border rounded d-flex align-items-center justify-content-center hover-shadow transition-all"
+                  style={{ cursor: 'pointer', width: '80px', height: '80px', backgroundColor: 'var(--color-gray-100)' }}
                   onClick={() => handleIconClick(iconName)}
+                  title={iconName}
                 >
-                  <IconComponent iconName={iconName} size={48} />
+                  <IconComponent iconName={iconName} size={64} />
                 </div>
               ))}
             </div>

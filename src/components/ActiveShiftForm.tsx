@@ -1,14 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import {
-  Coffee, Apple, Pizza, Beef, Salad, Soup, Utensils, Wine,
-  Banana, Cookie, Croissant, CupSoda, CakeSlice, Beer, Donut, EggFried,
-  GlassWater, Milk, IceCream, Drumstick, Ham, Hamburger, AlertTriangle, BottleWine, Sandwich,
-  Leaf, Vegan, WheatOff, MilkOff, HeartPulse, FishOff, Baby
+  AlertTriangle,
+  Leaf, Vegan, WheatOff, MilkOff, HeartPulse, FishOff, Baby, CupSoda
 } from 'lucide-react';
-
-// --- Icon Mapping ---
-const iconMap: { [key: string]: React.ElementType } = { Coffee, Sandwich: Sandwich, Apple, Pizza, Beef, Salad, Soup, Utensils, Wine, Banana, Cookie, Croissant, CupSoda, CakeSlice, Beer, Donut, Egg: EggFried, EggFried, GlassWater, Milk, IceCream, Drumstick, Ham, Burger: Hamburger, Hamburger, BottleWine: BottleWine };
+import IconComponent from "../utilities/icons.utility";
 
 // --- 1. Definición de Tipos para los Datos de la API ---
 interface Category {
@@ -76,8 +72,7 @@ interface Ticket {
 
 // --- Icon Component ---
 const MenuItemIcon: React.FC<{ iconName: string }> = ({ iconName }) => {
-  const Icon = iconMap[iconName] || AlertTriangle;
-  return <Icon size={40} />;
+  return <IconComponent iconName={iconName} size={40} />;
 };
 
 const observationIconMap: { [key: string]: React.ElementType } = {

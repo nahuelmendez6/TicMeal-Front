@@ -71,8 +71,8 @@ const ItemList: React.FC<Props> = ({ items, onEdit, onDelete, onManageStock, ite
     ...item,
     name: (
       <div className="d-flex align-items-center">
-        <IconComponent iconName={item.iconName} size={24} /> {/* Increased size */}
-        <span className="ms-2">{item.name}</span>
+        <IconComponent iconName={item.iconName} size={40} /> {/* Increased size to 40 */}
+        <span className="ms-3 fw-medium">{item.name}</span>
       </div>
     ),
     quantityInStock: item.quantityInStock ?? "—",

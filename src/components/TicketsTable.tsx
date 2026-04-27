@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import IconComponent from '../utilities/icons.utility';
 
 // 1. Definición de Tipos
 interface TicketUser {
@@ -234,7 +235,16 @@ const TicketsTable: React.FC = () => {
                                             <td>{ticket.shift.name}</td>
                                             <td>{new Date(ticket.createdAt).toLocaleString('es-ES')}</td>
                                             <td className="text-center">{getStatusBadge(ticket.status)}</td>
-                                            <td>{ticket.items?.map(item => `${item.quantity} x ${item.menuItem.name.trim()}`).join(', ')}</td>
+                                            <td>
+                                                <div className="d-flex flex-wrap gap-2">
+                                                    {ticket.items?.map(item => (
+                                                        <div key={item.id} className="d-flex align-items-center bg-light rounded p-1" title={item.menuItem.name}>
+                                                            <IconComponent iconName={item.menuItem.iconName} size={32} />
+                                                            <span className="ms-1 small fw-bold">x{item.quantity}</span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </td>
                                         </tr>
                                     ))
                                 ) : (

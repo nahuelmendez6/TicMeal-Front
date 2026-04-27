@@ -89,7 +89,7 @@ const ItemForm: React.FC<Props> = ({
     const { name, value } = e.target;
     setNutritionalInfo((prev: NutritionalInfo) => ({
       ...prev,
-      [name]: value === '' ? undefined : Number(value),
+      [name]: value === '' ? null : Number(value),
     }));
   };
 
@@ -134,9 +134,9 @@ const ItemForm: React.FC<Props> = ({
               <div className="d-flex align-items-center">
                 <div
                   className="p-1 border rounded d-flex align-items-center justify-content-center me-2 bg-light"
-                  style={{ width: '40px', height: '40px' }}
+                  style={{ width: '80px', height: '80px' }}
                 >
-                  <IconComponent iconName={newItem.iconName} size={24} />
+                  <IconComponent iconName={newItem.iconName} size={64} />
                 </div>
                 <Button
                   type="button"

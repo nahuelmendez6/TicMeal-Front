@@ -5,6 +5,7 @@ import { fetchShifts } from '../services/shift.services';
 import { menuItemsService } from '../services/menu.items.service';
 import api from '../services/api';
 import { Plus, ChevronLeft, ChevronRight, Pencil, Trash2 } from 'lucide-react';
+import IconComponent from '../utilities/icons.utility';
 import MealShiftFormModal from './MealShiftFormModal';
 import Card from './common/Card';
 import Button from './common/Button';
@@ -208,7 +209,8 @@ const DailyProductionLog: React.FC = () => {
       ),
       menuItemName: (
         <div className="d-flex align-items-center">
-          {menuItemName}
+          <IconComponent iconName={menuItem?.iconName} size={32} />
+          <span className="ms-2">{menuItemName}</span>
         </div>
       ),
       quantityAvailable: (
