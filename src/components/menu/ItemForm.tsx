@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Input from "../common/Input";
 import Select from "../common/Select";
 import IconComponent from "../../utilities/icons.utility";
-import type { IconName } from "../../utilities/icons.utility";
 import type { NutritionalInfo } from "../../types/nutritionalInfo";
+import type { Observation } from "../../types/observation";
+import { getObservations } from "../../services/observation.service";
 import IconPicker from "./IconPicker";
 import Button from "../common/Button";
 
@@ -14,12 +15,13 @@ import Button from "../common/Button";
 interface Props {
   editingItem: any | null;
   categories: any[];
-  onSubmit: (formData: any, recipeIngredients: any[], nutritionalInfo: NutritionalInfo) => void;
+  onSubmit: (formData: any, recipeIngredients: any[], nutritionalInfo: NutritionalInfo, observationIds: number[]) => void;
   recipeIngredients: any[];
   newItemState?: any;
   setNewItemState?: any;
   nutritionalInfoState: [NutritionalInfo, React.Dispatch<React.SetStateAction<NutritionalInfo>>];
-  onCancel: () => void; // Added onCancel prop
+  onCancel: () => void;
+  renderRecipeEditor?: () => React.ReactNode;
 }
 
 const ItemForm: React.FC<Props> = ({
@@ -30,13 +32,36 @@ const ItemForm: React.FC<Props> = ({
   newItemState,
   setNewItemState,
   nutritionalInfoState,
-  onCancel, // Destructure onCancel
+  onCancel,
+  renderRecipeEditor,
 }) => {
   const newItem = newItemState!;
   const setNewItem = setNewItemState!;
   const [nutritionalInfo, setNutritionalInfo] = nutritionalInfoState;
 
   const [isIconPickerOpen, setIsIconPickerOpen] = useState(false);
+  const [availableObservations, setAvailableObservations] = useState<Observation[]>([]);
+  const [selectedObservationIds, setSelectedObservationIds] = useState<number[]>([]);
+
+  useEffect(() => {
+    const fetchObservations = async () => {
+      try {
+        const obs = await getObservations();
+        setAvailableObservations(obs);
+      } catch (error) {
+        console.error('Error fetching observations:', error);
+      }
+    };
+    fetchObservations();
+  }, []);
+
+  useEffect(() => {
+    if (editingItem?.observations) {
+      setSelectedObservationIds(editingItem.observations.map((o: any) => o.id));
+    } else {
+      setSelectedObservationIds([]);
+    }
+  }, [editingItem]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -55,7 +80,8 @@ const ItemForm: React.FC<Props> = ({
     onSubmit(
       newItem,
       recipeIngredients,
-      newItem.type === 'SIMPLE' ? nutritionalInfo : undefined
+      newItem.type === 'SIMPLE' ? nutritionalInfo : undefined as any,
+      selectedObservationIds
     );
   };
 
@@ -67,12 +93,18 @@ const ItemForm: React.FC<Props> = ({
     }));
   };
 
+  const handleObservationToggle = (id: number) => {
+    setSelectedObservationIds(prev =>
+      prev.includes(id) ? prev.filter(obsId => obsId !== id) : [...prev, id]
+    );
+  };
+
   return (
     <form onSubmit={submit} id="item-form">
       <div className="row g-3">
-
-        {/* IZQUIERDA */}
-        <div className="col-md-6">
+        {/* IZQUIERDA: General Info & Observations */}
+        <div className="col-md-6 border-end">
+          <h6 className="mb-3">Información General</h6>
           <Input
             label="Nombre"
             type="text"
@@ -82,7 +114,43 @@ const ItemForm: React.FC<Props> = ({
             required
           />
 
-          <div className="row">
+          <div className="row g-2">
+            <div className="col-sm-6">
+              <Select
+                label="Categoría"
+                name="categoryId"
+                value={newItem.categoryId}
+                onChange={handleChange}
+              >
+                {categories.map((cat: any) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </option>
+                ))}
+              </Select>
+            </div>
+            <div className="col-sm-6">
+              <label className="form-label">Ícono</label>
+              <div className="d-flex align-items-center">
+                <div
+                  className="p-1 border rounded d-flex align-items-center justify-content-center me-2 bg-light"
+                  style={{ width: '40px', height: '40px' }}
+                >
+                  <IconComponent iconName={newItem.iconName} size={24} />
+                </div>
+                <Button
+                  type="button"
+                  variant="outline-secondary"
+                  size="sm"
+                  onClick={() => setIsIconPickerOpen(true)}
+                >
+                  Cambiar
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          <div className="row g-2">
             <div className="col-sm-6">
               <Input
                 label="Stock Mínimo"
@@ -103,93 +171,107 @@ const ItemForm: React.FC<Props> = ({
               />
             </div>
           </div>
-        </div>
 
-        {/* DERECHA */}
-        <div className="col-md-6">
-          <Select
-            label="Categoría"
-            name="categoryId"
-            value={newItem.categoryId}
-            onChange={handleChange}
-          >
-            {categories.map((cat: any) => (
-              <option key={cat.id} value={cat.id}>
-                {cat.name}
-              </option>
-            ))}
-          </Select>
-
-          <div className="row">
-            <div className="col-sm-12">
-              <label className="form-label">Ícono</label>
-              <div className="d-flex align-items-center">
-                <div
-                  className="p-2 border rounded-sm d-flex align-items-center justify-content-center me-3"
-                  style={{ width: '60px', height: '60px' }}
-                >
-                  <IconComponent iconName={newItem.iconName} size={32} />
+          <h6 className="mt-4 mb-2">Observaciones / Alérgenos</h6>
+          <div className="border rounded p-2 bg-light" style={{ height: '160px', overflowY: 'auto' }}>
+            <div className="row g-1">
+              {availableObservations.map((obs) => (
+                <div key={obs.id} className="col-6">
+                  <div className={`p-1 border rounded d-flex align-items-center mb-1 ${selectedObservationIds.includes(obs.id) ? 'bg-white border-primary' : 'bg-transparent'}`} 
+                       style={{ cursor: 'pointer' }}
+                       onClick={() => handleObservationToggle(obs.id)}>
+                    <input
+                      className="form-check-input me-2 mt-0"
+                      type="checkbox"
+                      checked={selectedObservationIds.includes(obs.id)}
+                      readOnly
+                    />
+                    <div className="d-flex align-items-center overflow-hidden">
+                      <span className="me-1" style={{ fontSize: '0.8rem' }}>🖼️</span>
+                      <span className="text-truncate" style={{ fontSize: '0.75rem' }} title={obs.name}>{obs.name}</span>
+                    </div>
+                  </div>
                 </div>
-                <Button
-                  type="button"
-                  variant="secondary"
-                  onClick={() => setIsIconPickerOpen(true)}
-                >
-                  Cambiar Ícono
-                </Button>
-              </div>
+              ))}
             </div>
           </div>
         </div>
-      </div>
 
-      {newItem.type === 'SIMPLE' && (
-        <>
-          <h6 className="mt-4 mb-3">Información Nutricional (por 100g o unidad base)</h6>
-          <Input
-            label="Calorías"
-            type="number"
-            name="calories"
-            value={nutritionalInfo.calories ?? ''}
-            onChange={handleNutritionalChange}
-          />
-          <Input
-            label="Proteínas (g)"
-            type="number"
-            name="protein"
-            value={nutritionalInfo.protein ?? ''}
-            onChange={handleNutritionalChange}
-          />
-          <Input
-            label="Carbohidratos (g)"
-            type="number"
-            name="carbohydrates"
-            value={nutritionalInfo.carbohydrates ?? ''}
-            onChange={handleNutritionalChange}
-          />
-          <Input
-            label="Grasas (g)"
-            type="number"
-            name="fat"
-            value={nutritionalInfo.fat ?? ''}
-            onChange={handleNutritionalChange}
-          />
-          <Input
-            label="Azúcar (g) (Opcional)"
-            type="number"
-            name="sugar"
-            value={nutritionalInfo.sugar ?? ''}
-            onChange={handleNutritionalChange}
-          />
-          <Input
-            label="Sodio (mg) (Opcional)"
-            type="number"
-            name="sodium"
-            value={nutritionalInfo.sodium ?? ''}
-            onChange={handleNutritionalChange}
-          />
-        </>
-      )}
+        {/* DERECHA: Nutritional Info & Recipe */}
+        <div className="col-md-6">
+          {newItem.type === 'SIMPLE' ? (
+            <>
+              <h6 className="mb-3">Información Nutricional (por 100g/u)</h6>
+              <div className="row g-2">
+                <div className="col-6">
+                  <Input
+                    label="Calorías"
+                    type="number"
+                    name="calories"
+                    value={nutritionalInfo.calories ?? ''}
+                    onChange={handleNutritionalChange}
+                  />
+                </div>
+                <div className="col-6">
+                  <Input
+                    label="Proteínas (g)"
+                    type="number"
+                    name="protein"
+                    value={nutritionalInfo.protein ?? ''}
+                    onChange={handleNutritionalChange}
+                  />
+                </div>
+                <div className="col-6">
+                  <Input
+                    label="Carbo (g)"
+                    type="number"
+                    name="carbohydrates"
+                    value={nutritionalInfo.carbohydrates ?? ''}
+                    onChange={handleNutritionalChange}
+                  />
+                </div>
+                <div className="col-6">
+                  <Input
+                    label="Grasas (g)"
+                    type="number"
+                    name="fat"
+                    value={nutritionalInfo.fat ?? ''}
+                    onChange={handleNutritionalChange}
+                  />
+                </div>
+                <div className="col-6">
+                  <Input
+                    label="Azúcar (g)"
+                    type="number"
+                    name="sugar"
+                    value={nutritionalInfo.sugar ?? ''}
+                    onChange={handleNutritionalChange}
+                  />
+                </div>
+                <div className="col-6">
+                  <Input
+                    label="Sodio (mg)"
+                    type="number"
+                    name="sodium"
+                    value={nutritionalInfo.sodium ?? ''}
+                    onChange={handleNutritionalChange}
+                  />
+                </div>
+              </div>
+              <div className="mt-4 p-3 bg-light rounded text-muted small">
+                <p className="mb-0">Los valores ingresados se utilizarán para el cálculo automático de costos y valores nutricionales.</p>
+              </div>
+            </>
+          ) : (
+            <div className="h-100 d-flex flex-column">
+              <h6 className="mb-3">Receta</h6>
+              <div className="flex-grow-1 overflow-auto border rounded p-2 bg-light">
+                {renderRecipeEditor && renderRecipeEditor()}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
 
       <IconPicker
         isOpen={isIconPickerOpen}

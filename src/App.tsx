@@ -27,6 +27,7 @@ import WasteLogPage from './pages/WasteLogPage';
 import InventoryAuditPage from './pages/InventoryAuditPage'; // New import
 import InventoryVariancePage from './pages/InventoryVariancePage'; // New import
 import ProductionPlanPage from './pages/ProductionPlanPage'; // New import
+import Dashboard from './pages/Dashboard';
 import './App.css';
 
 function App() {
@@ -72,7 +73,7 @@ function App() {
             element={
               <ProtectedRoute>
                 <Layout>  
-                  <MenuManagementPage />
+                  <Dashboard />
                 </Layout>
               </ProtectedRoute>
             }
@@ -203,9 +204,9 @@ function App() {
           } />
           <Route path="/meal-shifts" element={
             <ProtectedRoute>
-              {/* <Layout> */}
+              <Layout>
                 <MealShiftsPage />
-              {/* </Layout> */}
+              </Layout>
             </ProtectedRoute>
           } />
           <Route path="/production-plan" element={

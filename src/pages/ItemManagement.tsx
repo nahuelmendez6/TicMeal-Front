@@ -3,7 +3,7 @@ import CategoryTabs from '../components/menu/CategoryTabs';
 import ItemForm from '../components/menu/ItemForm';
 import RecipeEditor from '../components/menu/RecipeEditor';
 import DeleteModal from '../components/menu/DeleteModal';
-import StockMovementModal from '../components/ingredient/StockMovementModal'; // Importar el nuevo modal
+import StockMovementModal from '../components/ingredient/StockMovementModal';
 import { useMenuItems } from '../hooks/useMenu';
 import { useRecipes } from '../hooks/useRecipes';
 import { categoriesService } from '../services/categories.service';
@@ -16,11 +16,20 @@ import { Plus } from 'lucide-react';
 import type { MenuItem } from '../types/menu';
 import Card from '../components/common/Card';
 import Button from '../components/common/Button';
-import ItemList from '../components/menu/ItemList'; // Moved here to avoid circular dependency
+import ItemList from '../components/menu/ItemList';
 
 interface ItemManagementProps {
   itemType?: 'SIMPLE' | 'COMPUESTO';
 }
+
+const initialNutritionalState: NutritionalInfo = {
+  calories: '',
+  protein: '',
+  carbohydrates: '',
+  fat: '',
+  sugar: '',
+  sodium: '',
+};
 
 // --- Main Component ---
 const ItemManagement: React.FC<ItemManagementProps> = ({ itemType }) => {
@@ -52,14 +61,7 @@ const ItemManagement: React.FC<ItemManagementProps> = ({ itemType }) => {
     maxOrder: 0,
     iconName: 'Coffee',
     type: itemType || 'SIMPLE',
-    nutritionalInfo: itemType === 'SIMPLE' ? {
-      calories: '',
-      protein: '',
-      carbohydrates: '',
-      fat: '',
-      sugar: '',
-      sodium: '',
-    } : undefined,
+    nutritionalInfo: itemType === 'SIMPLE' ? { ...initialNutritionalState } : undefined,
   });
 
   const setNutritionalInfo = (newNutritionalInfo: NutritionalInfo | ((prev: NutritionalInfo) => NutritionalInfo)) => {
@@ -108,42 +110,31 @@ const ItemManagement: React.FC<ItemManagementProps> = ({ itemType }) => {
   }, [items, itemType]);
 
   useEffect(() => {
-    // Si estamos cargando o no hay una categoría seleccionada, no hacemos nada.
     if (loading || !selectedCategory) return;
-
-    // Verificamos si la categoría actual todavía tiene ítems.
     const categoryHasItems = visibleItems.some(item => item.category?.name === selectedCategory);
-
     if (!categoryHasItems) {
-      // Si no tiene, buscamos la primera categoría que sí tenga ítems y la seleccionamos.
       const nextCategoryWithItems = categories.find(cat => visibleItems.some(item => item.category?.id === cat.id));
       setSelectedCategory(nextCategoryWithItems ? nextCategoryWithItems.name : null);
     }
   }, [visibleItems, categories, selectedCategory, loading]);
 
-  const handleSubmit = async (formData: typeof newItem, recipeData: RecipeInput[], nutritionalData: NutritionalInfo) => {
+  const handleSubmit = async (formData: typeof newItem, recipeData: RecipeInput[], nutritionalData: NutritionalInfo, observationIds: number[]) => {
     setIsSubmitting(true);
     setError(null);
 
-    // 1. Preparar el payload solo con los datos del ítem, sin la receta.
     const itemPayload = {
       ...formData,
       categoryId: formData.categoryId ? parseInt(formData.categoryId, 10) : undefined,
       nutritionalInfo: nutritionalData,
+      observationIds,
     };
 
     try {
       if (editingItem) {
-        // A. Si estamos editando:
-        // Primero, actualizamos el ítem del menú.
         await updateItem(editingItem.id, itemPayload);
-        // Segundo, sincronizamos la receta usando el hook useRecipes.
         await syncRecipe(editingItem, recipeData);
       } else {
-        // B. Si estamos creando:
-        // Primero, creamos el ítem y obtenemos el objeto guardado con su nuevo ID.
         const savedItem = await createItem(itemPayload);
-        // Segundo, si se creó bien y hay una receta, la sincronizamos.
         if (savedItem && savedItem.id && recipeData.length > 0) {
           const itemForRecipeSync = { id: savedItem.id, recipeIngredients: [] };
           await syncRecipe(itemForRecipeSync, recipeData);
@@ -151,7 +142,7 @@ const ItemManagement: React.FC<ItemManagementProps> = ({ itemType }) => {
       }
 
       handleCancelEdit();
-      await fetchItems(); // Recargamos los ítems para ver los cambios.
+      await fetchItems();
     } catch (err) {
       setError(err instanceof Error ? err.message : `Ocurrió un error al ${editingItem ? 'actualizar' : 'crear'} el ítem`);
     } finally {
@@ -168,27 +159,14 @@ const ItemManagement: React.FC<ItemManagementProps> = ({ itemType }) => {
       categoryId: categories.length > 0 ? String(categories[0].id) : '',
       iconName: 'Coffee',
       type: itemType || 'SIMPLE',
-      nutritionalInfo: itemType === 'SIMPLE' ? {
-        calories: '',
-        protein: '',
-        carbohydrates: '',
-        fat: '',
-        sugar: '',
-        sodium: '',
-      } : undefined,
+      nutritionalInfo: itemType === 'SIMPLE' ? { ...initialNutritionalState } : undefined,
     });
     setRecipeInputs([]);
-
     setIsModalOpen(true);
   };
 
   const handleEditClick = (item: MenuItem) => {
-    // Sanitize the item to prevent cyclic object errors.
-    // Only store what's necessary for the edit/sync logic.
-    setEditingItem({
-      id: item.id,
-      recipeIngredients: item.recipeIngredients,
-    });
+    setEditingItem(item);
     setNewItem({
       name: item.name,
       minStock: item.minStock ?? 0,
@@ -196,6 +174,7 @@ const ItemManagement: React.FC<ItemManagementProps> = ({ itemType }) => {
       categoryId: String(item.category?.id ?? ''),
       iconName: item.iconName ?? 'Coffee',
       type: item.type || itemType || 'SIMPLE',
+      nutritionalInfo: item.nutritionalInfo ?? { ...initialNutritionalState },
     });
 
     const existingRecipeInputs: RecipeInput[] = item.recipeIngredients.map((ri: RecipeIngredient) => ({
@@ -204,7 +183,6 @@ const ItemManagement: React.FC<ItemManagementProps> = ({ itemType }) => {
     }));
 
     setRecipeInputs(existingRecipeInputs);
-    setNutritionalInfo(item.nutritionalInfo ?? initialNutritionalState); // Initialize nutritional info
     setIsModalOpen(true);
   };
 
@@ -217,17 +195,9 @@ const ItemManagement: React.FC<ItemManagementProps> = ({ itemType }) => {
       categoryId: categories.length > 0 ? String(categories[0].id) : '',
       iconName: 'Coffee',
       type: itemType || 'SIMPLE',
-      nutritionalInfo: itemType === 'SIMPLE' ? {
-        calories: '',
-        protein: '',
-        carbohydrates: '',
-        fat: '',
-        sugar: '',
-        sodium: '',
-      } : undefined,
+      nutritionalInfo: itemType === 'SIMPLE' ? { ...initialNutritionalState } : undefined,
     });
     setRecipeInputs([]);
-
     setIsModalOpen(false);
   };
 
@@ -243,7 +213,7 @@ const ItemManagement: React.FC<ItemManagementProps> = ({ itemType }) => {
     setError(null);
     try {
       await deleteItem(itemToDelete);
-      await fetchItems(); // Volvemos a cargar los ítems para reflejar la eliminación.
+      await fetchItems();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Ocurrió un error al eliminar el ítem');
     } finally {
@@ -264,7 +234,7 @@ const ItemManagement: React.FC<ItemManagementProps> = ({ itemType }) => {
   };
 
   const handleStockMovementSuccess = () => {
-    fetchItems(); // Recargar la lista de items para reflejar el nuevo stock
+    fetchItems();
   };
 
   const filteredItems = useMemo(() => {
@@ -279,42 +249,35 @@ const ItemManagement: React.FC<ItemManagementProps> = ({ itemType }) => {
 
       <div className="d-flex justify-content-end mb-3">
         <Button onClick={handleCreateClick}>
-          <Plus size={18} className="me-2" /> {itemType === 'COMPUESTO' ? 'Nuevo Producto Compuesto' : 'Nuevo Producto Simple'}
+          <Plus size={18} className="me-2" /> {itemType === 'COMPUESTO' ? 'Nuevo P. Compuesto' : 'Nuevo P. Simple'}
         </Button>
       </div>
 
-      {/* --- List Section --- */}
       <div>
-        {/* Category Tabs */}
         {loading ? (
           <div className="text-center"><div className="spinner-border spinner-border-sm" role="status"><span className="visually-hidden">Cargando...</span></div></div>
         ) : (
           <CategoryTabs
             categories={categories}
-            items={visibleItems.map(item => ({
-              ...item,
-              category: item.category ?? undefined,
-            })) as any}
+            items={visibleItems as any}
             selectedCategory={selectedCategory}
             onSelectCategory={setSelectedCategory}
           />
         )}
 
-        {/* Items Table */}
         <ItemList
           items={filteredItems as any}
           selectedCategory={selectedCategory}
           onEdit={handleEditClick as any}
           onDelete={handleDeleteClick}
           onManageStock={handleManageStockClick}
-          itemType={itemType} // Pass itemType here
+          itemType={itemType}
         />
       </div>
 
-      {/* Modal de Creación/Edición */}
       {isModalOpen && (
         <div className="modal show d-block" tabIndex={-1} style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
-          <div className="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+          <div className="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
             <div className="modal-content">
               <div className="modal-header">
                 <h5 className="modal-title">{editingItem ? 'Editar Item' : 'Crear Item'}</h5>
@@ -322,24 +285,22 @@ const ItemManagement: React.FC<ItemManagementProps> = ({ itemType }) => {
               </div>
               <div className="modal-body">
                 <ItemForm
-                  editingItem={editingItem as any}
+                  editingItem={editingItem}
                   categories={categories}
-                  onSubmit={handleSubmit as any}
+                  onSubmit={handleSubmit}
                   newItemState={newItem}
                   setNewItemState={setNewItem}
                   recipeIngredients={recipeInputs}
                   nutritionalInfoState={[newItem.nutritionalInfo as NutritionalInfo, setNutritionalInfo]}
-                />
-                {itemType === 'COMPUESTO' && (
-                  <div className="mt-4">
-                    <h5 className="mb-3">Receta</h5>
+                  onCancel={handleCancelEdit}
+                  renderRecipeEditor={() => (
                     <RecipeEditor
                       editingItem={editingItem as any}
                       ingredients={systemIngredients}
                       recipeState={[recipeInputs, setRecipeInputs]}
                     />
-                  </div>
-                )}
+                  )}
+                />
               </div>
               <div className="modal-footer">
                 <Button variant="secondary" onClick={handleCancelEdit}>Cancelar</Button>
@@ -352,7 +313,6 @@ const ItemManagement: React.FC<ItemManagementProps> = ({ itemType }) => {
         </div>
       )}
 
-      {/* Stock Movement Modal */}
       {isStockModalOpen && selectedItemForStock && (
         <StockMovementModal
           item={selectedItemForStock}
@@ -366,7 +326,6 @@ const ItemManagement: React.FC<ItemManagementProps> = ({ itemType }) => {
         />
       )}
 
-      {/* Delete Confirmation Modal */}
       <DeleteModal
         open={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}
