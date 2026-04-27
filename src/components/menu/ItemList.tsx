@@ -1,8 +1,9 @@
 import React from "react";
+import { PackagePlus, FilePenLine, Trash2 } from 'lucide-react';
 import type { MenuItem as MenuItemType } from '../../types/menu';
 import Table from '../common/Table';
 import Button from '../common/Button';
-import IconComponent from '../../utilities/icons.utility'; // Corrected import path
+import IconComponent from '../../utilities/icons.utility';
 
 // ----------------------------------------------------------------------
 // LIST COMPONENT
@@ -28,35 +29,41 @@ const ItemList: React.FC<Props> = ({ items, onEdit, onDelete, onManageStock, ite
   ];
 
   const renderRowActions = (item: any) => ( // Change type to any as it's a formatted item
-    <>
+    <div className="d-flex align-items-center">
       {item.type === 'SIMPLE' && (
         <Button
           variant="success"
           size="sm"
           onClick={() => onManageStock(item.originalItem)} // Use originalItem
           title="Gestionar Stock"
-          className="me-2"
+          className="me-2 d-flex align-items-center justify-content-center"
+          style={{ width: '32px', height: '32px', padding: 0 }}
         >
-          <IconComponent iconName="PackagePlus" size={24} /> {/* Increased size */}
+          <PackagePlus size={18} />
         </Button>
       )}
       <Button
         variant="primary"
         size="sm"
         onClick={() => onEdit(item.originalItem)} // Use originalItem
-        className="me-2"
+        title="Editar"
+        className="me-2 d-flex align-items-center justify-content-center"
+        style={{ width: '32px', height: '32px', padding: 0 }}
       >
-        <IconComponent iconName="FilePenLine" size={24} /> {/* Increased size */}
+        <FilePenLine size={18} />
       </Button>
 
       <Button
         variant="danger"
         size="sm"
         onClick={() => onDelete(item.id)}
+        title="Eliminar"
+        className="d-flex align-items-center justify-content-center"
+        style={{ width: '32px', height: '32px', padding: 0 }}
       >
-        <IconComponent iconName="Trash2" size={24} /> {/* Increased size */}
+        <Trash2 size={18} />
       </Button>
-    </>
+    </div>
   );
 
   const formattedItems = items.map(item => ({

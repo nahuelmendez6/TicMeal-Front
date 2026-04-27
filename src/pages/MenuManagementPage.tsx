@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Package, CookingPot, Refrigerator } from 'lucide-react';
 import ItemManagement from './ItemManagement';
 import ItemIngredientManager from './ItemIngredientManager';
 import MealShiftManager from '../components/MealShiftManager';
@@ -18,10 +19,6 @@ const MenuManagementPage: React.FC = () => {
             <hr />
             <div className="d-flex justify-content-between align-items-center mb-3">
               <h3 className="mb-0">Gestión de Productos Compuestos</h3>
-              {/* <button className="btn btn-primary d-flex align-items-center" onClick={handleOpenCompositeItemForm}>
-                <Plus size={20} className="me-2" />
-                Nuevo Producto Compuesto
-              </button> */}
             </div>
             <ItemManagement itemType="COMPUESTO" />
           </div>
@@ -35,19 +32,31 @@ const MenuManagementPage: React.FC = () => {
 
   return (
     <PageLayout title="Gestión de Menú">
-      <ul className="nav nav-underline mb-3">
+      <ul className="nav nav-underline mb-4">
         <li className="nav-item">
-          <button className={`nav-link ${activeTab === 'simple' ? 'active' : ''}`} onClick={() => setActiveTab('simple')}>
+          <button 
+            className={`nav-link d-flex align-items-center ${activeTab === 'simple' ? 'active' : ''}`} 
+            onClick={() => setActiveTab('simple')}
+          >
+            <Package size={18} className="me-2" />
             Productos Simples
           </button>
         </li>
         <li className="nav-item">
-          <button className={`nav-link ${activeTab === 'production' ? 'active' : ''}`} onClick={() => setActiveTab('production')}>
+          <button 
+            className={`nav-link d-flex align-items-center ${activeTab === 'production' ? 'active' : ''}`} 
+            onClick={() => setActiveTab('production')}
+          >
+            <CookingPot size={18} className="me-2" />
             Producción
           </button>
         </li>
         <li className="nav-item">
-          <button className={`nav-link ${activeTab === 'ingredients' ? 'active' : ''}`} onClick={() => setActiveTab('ingredients')}>
+          <button 
+            className={`nav-link d-flex align-items-center ${activeTab === 'ingredients' ? 'active' : ''}`} 
+            onClick={() => setActiveTab('ingredients')}
+          >
+            <Refrigerator size={18} className="me-2" />
             Insumos
           </button>
         </li>

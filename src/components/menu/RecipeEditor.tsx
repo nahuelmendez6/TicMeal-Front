@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Trash2, Plus } from 'lucide-react';
 import type { Ingredient } from "../../types/ingtredient";
 import type { RecipeInput } from "../../types/recipe";
 
@@ -93,20 +94,20 @@ const RecipeEditor: React.FC<Props> = ({
         </div>
 
         <div className="col-md-2">
-          <button type="button" className="btn btn-success w-100" onClick={addIngredient}>
-            Agregar
+          <button type="button" className="btn btn-success w-100 d-flex align-items-center justify-content-center" onClick={addIngredient}>
+            <Plus size={18} className="me-1" /> Agregar
           </button>
         </div>
       </div>
 
       {/* Tabla */}
       {recipeIngredients.length > 0 && (
-        <table className="table table-sm">
+        <table className="table table-sm align-middle">
           <thead>
             <tr>
               <th>Ingrediente</th>
               <th>Cant.</th>
-              <th></th>
+              <th style={{ width: '50px' }}></th>
             </tr>
           </thead>
 
@@ -120,14 +121,15 @@ const RecipeEditor: React.FC<Props> = ({
                   <td>{r.quantity}</td>
                   <td>
                     <button
-                      className="btn btn-sm btn-outline-danger"
+                      className="btn btn-sm btn-outline-danger d-flex align-items-center justify-content-center"
                       onClick={() =>
                         setRecipeIngredients(prev =>
                           prev.filter(item => item.ingredientId !== r.ingredientId)
                         )
                       }
+                      title="Quitar ingrediente"
                     >
-                      ✕
+                      <Trash2 size={16} />
                     </button>
                   </td>
                 </tr>
